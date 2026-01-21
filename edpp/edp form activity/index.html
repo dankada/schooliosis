@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Choose Sign Up or Sign In</title>
+  <script defer src="script.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex items-center justify-center min-h-screen bg-gray-100">
+  <div class="space-x-4">
+    <button id="signupBtn" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-6 rounded">Sign Up</button>
+    <button id="signinBtn" class="bg-red-500 hover:bg-red-600 text-white py-2 px-6 rounded">Sign In</button>
+  </div>
+
+  <script>
+    document.getElementById('signupBtn').addEventListener('click', () => {
+      window.location.href = 'signup.html';
+    });
+    document.getElementById('signinBtn').addEventListener('click', () => {
+      window.location.href = 'signin.html';
+    });
+  </script>
+</body>
+</html>
