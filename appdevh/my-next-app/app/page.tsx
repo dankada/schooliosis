@@ -107,7 +107,7 @@ useEffect(() => {
                 className="relative cursor-pointer group"
               >
                 <img 
-                  src="/Screenshot 2026-01-21 155754.png" 
+                  src="\images\Screenshot 2026-01-21 155754.png" 
                   alt="profile"
                   className="w-40 h-40 rounded-full object-cover border-4 border-blue-500 hover:scale-110 transition-transform duration-300"
                 />
@@ -273,7 +273,7 @@ useEffect(() => {
             {/* Image Container */}
             <div className="flex items-center justify-center bg-white p-8">
               <img 
-                src="/Screenshot 2026-01-21 155754.png" 
+                src="\images\Screenshot 2026-01-21 155754.png" 
                 alt="profile full"
                 className="max-w-full max-h-96 object-contain"
               />
