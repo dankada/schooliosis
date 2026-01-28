@@ -7,6 +7,7 @@ import { Home, Mail, BookOpen, X } from "lucide-react";
 import { Divider } from 'primereact/divider';
 import { Card } from 'primereact/card';
 import { Button } from 'primereact/button';
+import BlogImageGallery from "./components/BlogImageGallery";
 
 interface ContentItem {
   id: number;
@@ -15,6 +16,7 @@ interface ContentItem {
   content: string;
   date: string;
   tags: string[];
+  images?: string[];
 }
 
 const CHAR_LIMIT = 200; // Characters before cutoff
@@ -92,26 +94,8 @@ useEffect(() => {
   };
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-gray-50">
-      {/* Sticky Header */}
-      <header className="sticky top-0 left-0 right-0 bg-black shadow-lg py-4 px-8 z-20 flex items-center justify-between">
-        <h1 className="text-xl font-bold text-white">My Profile</h1>
-        <nav className="flex items-center gap-6">
-          <Link href="/" className="flex items-center gap-2 text-white hover:text-gray-300 transition-colors">
-            <Home size={20} />
-            <span className="hidden sm:inline">Introduction</span>
-          </Link>
-          <Link href="/contact" className="flex items-center gap-2 text-white hover:text-gray-300 transition-colors">
-            <Mail size={20} />
-            <span className="hidden sm:inline">Contact</span>
-          </Link>
-          <Link href="/resources" className="flex items-center gap-2 text-white hover:text-gray-300 transition-colors">
-            <BookOpen size={20} />
-            <span className="hidden sm:inline">Resources</span>
-          </Link>
-        </nav>
-      </header>
-
+    <div className="relative min-h-screen w-full overflow-hidden">
+      
       <div className="flex min-h-screen pt-20">
         {/* Left Sidebar - Profile */}
         <div className="w-1/4 px-6 py-8 flex items-start justify-center">
@@ -171,75 +155,83 @@ useEffect(() => {
           </div>
         </div>
 
-        {/* Center Content Area - Cards */}
-        <div className="w-1/2 px-8 py-8 flex justify-center">
-          <div className="w-full max-w-2xl">
-            <h3 className="text-4xl font-bold text-gray-900 mb-12">Introduction</h3>
+{/* Center Content Area - Cards */}
+<div className="w-1/2 px-8 py-8 flex flex-col items-center">
+  <div className="w-full max-w-2xl space-y-8">
+    {/* Title Container with White Background */}
+    <div className="bg-white rounded-lg shadow-lg p-8">
+      <h3 className="text-4xl font-bold text-gray-900">Entries</h3>
+    </div>
 
-            {/* Content Cards */}
-            <div className="space-y-8">
-              {contentItems.map((item) => (
-                <div 
-                  key={item.id}
-                  onClick={() => openBlogModal(item)}
-                  className="hover:scale-105 transition-transform duration-300 cursor-pointer origin-center"
-                >
-                  <Card className="shadow-md hover:shadow-lg transition-shadow h-full">
-                    <div className="p-8">
-                      <h4 className="text-2xl font-bold text-gray-900 mb-2">{item.title}</h4>
-                      <p className="text-sm text-gray-500 mb-4">{new Date(item.date).toLocaleDateString()}</p>
-                      
-                      {/* Content with gradient fade effect */}
-                      <div className="relative mb-6">
-                        <p className="text-gray-700 leading-relaxed">
-                          {expandedId === item.id ? item.content : truncateText(item.content)}
-                        </p>
-                        {expandedId !== item.id && isTruncated(item.content) && (
-                          <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
-                        )}
-                      </div>
-                      
-                      {/* Tags */}
-                      <div className="flex gap-2 mb-6 flex-wrap">
-                        {item.tags.map((tag) => (
-                          <span key={tag} className="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
+    {/* Content Cards */}
+    <div className="space-y-8">
+      {contentItems.map((item) => (
+        <div 
+          key={item.id}
+          onClick={() => openBlogModal(item)}
+          className="hover:scale-105 transition-transform duration-300 cursor-pointer origin-center"
+        >
+<Card className="shadow-md hover:shadow-lg transition-shadow h-full bg-white">
+  <div className="p-8">
+    <h4 className="text-2xl font-bold text-gray-900 mb-2">{item.title}</h4>
+    <p className="text-sm text-gray-500 mb-4">{new Date(item.date).toLocaleDateString()}</p>
+    
+    {/* Image Gallery Preview */}
+    {item.images && item.images.length > 0 && (
+      <BlogImageGallery images={item.images} />
+    )}
+    
+    {/* Content with gradient fade effect and newline handling */}
+    <div className="relative mb-6">
+      <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+        {expandedId === item.id ? item.content : truncateText(item.content)}
+      </p>
+      {expandedId !== item.id && isTruncated(item.content) && (
+        <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
+      )}
+    </div>
+    
+    {/* Tags */}
+    <div className="flex gap-2 mb-6 flex-wrap">
+      {item.tags.map((tag) => (
+        <span key={tag} className="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
+          {tag}
+        </span>
+      ))}
+    </div>
 
-                      {/* Read More Button */}
-                      {isTruncated(item.content) && (
-                        <>
-                          {expandedId !== item.id && (
-                            <Button 
-                              label="Read More" 
-                              className="p-button-sm p-button-outlined"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setExpandedId(item.id);
-                              }}
-                            />
-                          )}
-                          {expandedId === item.id && (
-                            <Button 
-                              label="Show Less" 
-                              className="p-button-sm p-button-outlined p-button-danger"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setExpandedId(null);
-                              }}
-                            />
-                          )}
-                        </>
-                      )}
-                    </div>
-                  </Card>
-                </div>
-              ))}
-            </div>
-          </div>
+    {/* Read More Button */}
+    {isTruncated(item.content) && (
+      <>
+        {expandedId !== item.id && (
+          <Button 
+            label="Read More" 
+            className="p-button-sm p-button-outlined"
+            onClick={(e) => {
+              e.stopPropagation();
+              setExpandedId(item.id);
+            }}
+          />
+        )}
+        {expandedId === item.id && (
+          <Button 
+            label="Show Less" 
+            className="p-button-sm p-button-outlined p-button-danger"
+            onClick={(e) => {
+              e.stopPropagation();
+              setExpandedId(null);
+            }}
+          />
+        )}
+      </>
+    )}
+  </div>
+</Card>
         </div>
+      ))}
+    </div>
+  </div>
+</div>
 
         {/* Right Sidebar - YouTube Embed */}
         <div className="w-1/4 px-6 py-8">
@@ -325,9 +317,17 @@ useEffect(() => {
               <Divider />
 
               {/* Full Content */}
-              <p className="text-lg text-gray-700 leading-relaxed mt-8">
+              <p className="text-lg text-gray-700 leading-relaxed mt-8 whitespace-pre-wrap">
                 {selectedBlog.content}
               </p>
+
+              {/* Modal Image Gallery */}
+              {selectedBlog.images && selectedBlog.images.length > 0 && (
+                <div className="mt-8">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4">Gallery</h3>
+                  <BlogImageGallery images={selectedBlog.images} />
+                </div>
+              )}
             </div>
           </div>
         </div>

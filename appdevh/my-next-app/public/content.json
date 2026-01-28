@@ -2,22 +2,25 @@
   {
     "id": 1,
     "title": "Introduction",
-    "content": "Hi, I’m Lloyd Joshua M. Matobato, a second-year Computer Science student at AdDU. I’m currently deep-diving into the structure of Java, finding that I enjoy the challenge of pushing the language to its limits to see what I can build. \nMy early projects include a speed-scaling mobile game and a custom soundboard developed in MIT App Inventor. These taught me the core logic of user interaction and event-driven programming. Beyond the classroom, I like to play casual games and consuming media of the VTubing scene, which has led me to explore the intersection of tech and entertainment. Whether it's experimenting with video and image editing for high-effort... \"media creations\" or finding ways to integrate my coding knowledge into the games I play, I’m always looking for ways to bridge the gap between technical logic and creative chaos.",
+    "content": "Hi, I’m Lloyd Joshua M. Matobato, a second-year Computer Science student at AdDU. I’m currently deep-diving into the structure of Java, finding that I enjoy the challenge of pushing the language to its limits to see what I can build.\n\nMy early projects include a speed-scaling mobile game and a custom soundboard developed in MIT App Inventor. These taught me the core logic of user interaction and event-driven programming. Beyond the classroom, I like to play casual games and consuming media of the VTubing scene, which has led me to explore the intersection of tech and entertainment. Whether it's experimenting with video and image editing for high-effort \"media creations\" or finding ways to integrate my coding knowledge into the games I play, I’m always looking for ways to bridge the gap between technical logic and creative chaos.",
     "date": "2026-01-28",
-    "tags": []
+    "tags": ["introduction","computer-science"],
+    "images": [
+      
+    ]
   },
   {
     "id": 2,
-    "title": "My Development Journey",
-    "content": "I started learning web development a few years ago and have been passionate about creating beautiful and functional applications ever since.",
+    "title": "Cool People You Should Check Out",
+    "content": "If you're bored, check these people out:\nSameko Saba: https://www.youtube.com/@SamekoSaba\nGigi Murin: https://www.youtube.com/@holoen_gigimurin/streams\nMichi Mochievee: https://www.youtube.com/@michimochievee\nMataraKan: https://www.youtube.com/@MataraKan\nJurard T. Rexford: https://www.youtube.com/@JurardTRexford",
     "date": "2026-01-20",
-    "tags": []
-  },
-  {
-    "id": 3,
-    "title": "Technologies I Love",
-    "content": "I work with React, Next.js, TypeScript, and Tailwind CSS to create modern web applications. I also enjoy exploring new technologies and frameworks.",
-    "date": "2026-01-15",
-    "tags": []
+    "tags": ["recommendations","creators"],
+    "images": [
+      "/images/Matara Kan of Independent Profile.png",
+      "/images/Michi Mochievee Plushie.webp",
+      "/images/Sameko Saba Profile.jpg",
+      "/images/Gigi Murin Profile.png",
+      "/images/Jurard T. Rexford Profile.png"
+    ]
   }
 ]
