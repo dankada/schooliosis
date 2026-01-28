@@ -18,6 +18,9 @@ interface ContentItem {
 }
 
 const CHAR_LIMIT = 200; // Characters before cutoff
+const YOUTUBE_API_KEY = "AIzaSyA1K8QUA-RC45oGRCvpEqyNaIyrJNXsPzY";
+const GIGI_CHANNEL_ID = "UCDHABijvPBnJm7F-KlNME3w"; // Gigi Murin's channel
+const FALLBACK_VIDEO_ID = "8zWz92f_HGs";
 
 export default function HomePage() {
   const [contentItems, setContentItems] = useState<ContentItem[]>([]);
@@ -25,12 +28,55 @@ export default function HomePage() {
   const [imageModalOpen, setImageModalOpen] = useState(false);
   const [blogModalOpen, setBlogModalOpen] = useState(false);
   const [selectedBlog, setSelectedBlog] = useState<ContentItem | null>(null);
+  const [youtubeVideoId, setYoutubeVideoId] = useState(FALLBACK_VIDEO_ID);
+  const [youtubeTitle, setYoutubeTitle] = useState("Loading...");
 
   useEffect(() => {
     fetch('/content.json')
       .then(res => res.json())
       .then(data => setContentItems(data));
   }, []);
+
+  
+
+useEffect(() => {
+  console.log("useEffect triggered!"); // ADD THIS
+  console.log("API Key:", YOUTUBE_API_KEY ? "EXISTS" : "MISSING"); // ADD THIS
+  console.log("Channel ID:", GIGI_CHANNEL_ID ? "EXISTS" : "MISSING"); // ADD THIS
+  
+  const fetchLatestVideo = async () => {
+    console.log("fetchLatestVideo started"); // ADD THIS
+    try {
+      const response = await fetch(
+        `https://www.googleapis.com/youtube/v3/search?key=${YOUTUBE_API_KEY}&channelId=${GIGI_CHANNEL_ID}&part=snippet&order=date&maxResults=1&type=video`
+      );
+      
+      console.log("Response status:", response.status); // THIS ONE TOO
+      const data = await response.json();
+      console.log("API Response:", data); // AND THIS
+      
+      if (data.error) {
+        console.error("YouTube API Error:", data.error);
+        return;
+      }
+      
+      if (data.items && data.items.length > 0) {
+        const videoId = data.items[0].id.videoId;
+        const title = data.items[0].snippet.title;
+        console.log("Setting video:", videoId, title); // ADD THIS
+        setYoutubeVideoId(videoId);
+        setYoutubeTitle(title);
+      } else {
+        console.log("No items found in response"); // ADD THIS
+      }
+    } catch (error) {
+      console.error("Error fetching YouTube video:", error);
+      setYoutubeTitle("Latest Stream");
+    }
+  };
+  
+  fetchLatestVideo();
+}, []);
 
   const isTruncated = (content: string) => content.length > CHAR_LIMIT;
   const truncateText = (content: string) => content.substring(0, CHAR_LIMIT) + "...";
@@ -53,7 +99,7 @@ export default function HomePage() {
         <nav className="flex items-center gap-6">
           <Link href="/" className="flex items-center gap-2 text-white hover:text-gray-300 transition-colors">
             <Home size={20} />
-            <span className="hidden sm:inline">Home</span>
+            <span className="hidden sm:inline">Introduction</span>
           </Link>
           <Link href="/contact" className="flex items-center gap-2 text-white hover:text-gray-300 transition-colors">
             <Mail size={20} />
@@ -128,7 +174,7 @@ export default function HomePage() {
         {/* Center Content Area - Cards */}
         <div className="w-1/2 px-8 py-8 flex justify-center">
           <div className="w-full max-w-2xl">
-            <h3 className="text-4xl font-bold text-gray-900 mb-12">Entries</h3>
+            <h3 className="text-4xl font-bold text-gray-900 mb-12">Introduction</h3>
 
             {/* Content Cards */}
             <div className="space-y-8">
@@ -195,10 +241,21 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Right Sidebar - Empty for now */}
+        {/* Right Sidebar - YouTube Embed */}
         <div className="w-1/4 px-6 py-8">
-          <div className="bg-white rounded-lg shadow-lg p-8 sticky top-24">
-            <p className="text-gray-500 text-center">Coming Soon</p>
+          <div className="bg-white rounded-lg shadow-lg p-6 sticky top-24">
+            <h3 className="text-lg font-bold text-gray-900 mb-4">Check this person out</h3>
+            <div className="relative w-full overflow-hidden rounded-lg bg-black" style={{ paddingBottom: "56.25%" }}>
+              <iframe
+                className="absolute inset-0 w-full h-full"
+                src={`https://www.youtube.com/embed/${youtubeVideoId}`}
+                title={youtubeTitle}
+                allowFullScreen
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              />
+            </div>
+            <p className="text-sm text-gray-600 text-center mt-4 font-medium">Gigi Murin</p>
+            <p className="text-xs text-gray-500 text-center mt-1 truncate">{youtubeTitle}</p>
           </div>
         </div>
       </div>
