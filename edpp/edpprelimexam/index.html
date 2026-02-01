@@ -1,96 +1,36 @@
 <!DOCTYPE html>
-<!-- Declares this is an HTML5 document -->
-
 <html lang="en">
-<!-- The root HTML element with language set to English for accessibility -->
 
 <head>
-    <!-- The head section contains metadata and resources that don't display directly -->
-    
     <meta charset="UTF-8">
-    <!-- Sets character encoding to UTF-8 to support all characters and symbols -->
-    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Makes the page responsive on mobile devices by setting viewport width to device width -->
-    
     <title>To-Do List App</title>
-    <!-- The text that appears in the browser tab -->
-    
     <link rel="stylesheet" href="style.css">
-    <!-- Links to the external CSS file (style.css) for styling the page -->
-    <!-- This connection allows HTML to use the styles defined in style.css -->
 </head>
 
 <body>
-    <!-- The body contains all visible content on the page -->
-    
     <div class="gradient-background">
-        <!-- Outer container with animated gradient background (styled in CSS) -->
-        <!-- This div provides the colorful animated background effect -->
-        
         <div class="mainbg">
-            <!-- Main white content box that sits on top of the gradient -->
-            <!-- This is positioned and styled in CSS to create the centered white card -->
-            
             <div class="app-container">
-                <!-- Container for all the to-do list functionality -->
-                
-                <h1>My To-Do List</h1>
-                <!-- Main heading displayed at the top of the app -->
-                
+                <h1>My To-Do List</h1>                
                 <form id="todo-form">
-                    <!-- Form element for adding new tasks -->
-                    <!-- The id "todo-form" is used by JavaScript to detect form submission -->
-                    <!-- Forms by default refresh the page, but we'll prevent that in JavaScript -->
                     
                     <div class="input-group">
-                        <!-- Container to group the input field and button together -->
-                        
-                        <input 
-                            type="text" 
-                            id="task-input" 
-                            placeholder="Enter a new task..."
-                            autocomplete="off"
-                        >
-                        <!-- Text input field where users type their tasks -->
-                        <!-- type="text" makes it a text input field -->
-                        <!-- id="task-input" allows JavaScript to access this specific input -->
-                        <!-- placeholder shows hint text when field is empty -->
-                        <!-- autocomplete="off" prevents browser from suggesting previous entries -->
-                        
+                        <input type="text" id="task-input" placeholder="Enter a new task..." autocomplete="off">
+
                         <button type="submit" class="add-btn">
-                            <!-- Submit button that triggers the form submission -->
-                            <!-- type="submit" makes it submit the form when clicked -->
-                            <!-- class="add-btn" is used for CSS styling -->
-                            
                             <span>+</span> Add Task
-                            <!-- The visible text/icon on the button -->
                         </button>
                     </div>
-                    
-                    <div id="error-message" class="error-message hidden">
-                        <!-- Error message container that appears when validation fails -->
-                        <!-- id="error-message" lets JavaScript show/hide this element -->
-                        <!-- class "hidden" is defined in CSS to hide it by default -->
-                        
-                        Please enter a task!
-                        <!-- The error text shown when user tries to submit empty task -->
-                    </div>
+                    <div id="error-message" class="error-message hidden">Please enter a task!</div>
                 </form>
                 
                 <ul id="task-list" class="task-list">
-                    <!-- Unordered list that will hold all the tasks -->
-                    <!-- id="task-list" allows JavaScript to add task items here -->
-                    <!-- class="task-list" is used for CSS styling -->
-                    <!-- JavaScript will dynamically create <li> elements and add them here -->
                 </ul>
             </div>
         </div>
     </div>
     
     <script src="script.js"></script>
-    <!-- Links to the external JavaScript file that makes everything interactive -->
-    <!-- Placed at the end of body so HTML loads before JavaScript runs -->
-    <!-- This ensures all HTML elements exist before JavaScript tries to access them -->
 </body>
 </html>

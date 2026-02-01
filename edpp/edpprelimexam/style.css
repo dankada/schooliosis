@@ -1,670 +1,244 @@
-/* ===== RESET AND BASE STYLES ===== */
-/* These styles set up the foundation for the entire page */
-
-body, html {
-    /* Targets both the body and html elements */
-    
+body, html {   
     height: 100%;
-    /* Makes both elements take up the full height of the viewport */
-    /* This ensures the gradient background covers the entire screen */
-    
     margin: 0;
-    /* Removes default browser margins */
-    /* Prevents unwanted spacing around the edges */
-    
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    /* Sets the default font for all text on the page */
-    /* Falls back to next font if first isn't available */
 }
 
-* {
-    /* Universal selector - applies to all elements */
-    
-    box-sizing: border-box;
-    /* Makes width/height include padding and border */
-    /* This makes sizing elements more predictable and easier */
-}
+* {box-sizing: border-box;}
 
-
-/* ===== ANIMATED GRADIENT BACKGROUND ===== */
-/* This creates the colorful, moving background effect */
 
 .gradient-background {
-    /* Styles the outer container div with the animated gradient */
-    
     position: relative;
-    /* Sets positioning context for absolutely positioned children */
-    /* The .mainbg div uses this as its reference point */
-    
     width: 100%;
-    /* Takes up the full width of the viewport */
-    
     height: 100vh;
-    /* Takes up 100% of viewport height (full screen) */
-    /* vh stands for "viewport height" */
-    
     background: linear-gradient(45deg, #ff9a9e, #fecfef, #fefeff, #c3eefb, #ffc3a0);
-    /* Creates a diagonal gradient with 5 color stops */
-    /* 45deg makes it go from bottom-left to top-right */
-    
     background-size: 400% 400%;
-    /* Makes the background 4x larger than the container */
-    /* This allows the background to move during animation */
-    
     display: flex;
-    /* Enables flexbox layout for centering */
-    
     justify-content: center;
-    /* Centers child elements horizontally */
-    
     align-items: center;
-    /* Centers child elements vertically */
-    
     animation: gradientShift 15s ease infinite;
-    /* Applies the gradientShift animation */
-    /* 15s = duration, ease = timing function, infinite = repeats forever */
-    /* This makes the gradient colors move smoothly */
 }
 
 @keyframes gradientShift {
-    /* Defines the animation frames for the moving gradient */
-    
-    0% {
-        /* At the start of the animation */
-        background-position: 0% 50%;
-        /* Positions the gradient at the left side */
-    }
-    
-    50% {
-        /* Halfway through the animation */
-        background-position: 100% 50%;
-        /* Moves the gradient to the right side */
-    }
-    
-    100% {
-        /* At the end of the animation */
-        background-position: 0% 50%;
-        /* Returns to the starting position */
-        /* This creates a seamless loop */
-    }
+    0% { background-position: 0% 50%;}
+    50% {background-position: 100% 50%;}
+    100% {background-position: 0% 50%;    }
 }
-
-
-/* ===== MAIN WHITE CONTAINER ===== */
-/* This creates the white card that holds the to-do list */
 
 .mainbg {
-    /* Styles the white container positioned on top of the gradient */
-    
     position: absolute;
-    /* Positions this element relative to .gradient-background parent */
-    /* Allows precise positioning using top, bottom, left, right */
-    
     top: 10%;
-    /* 10% space from the top of the screen */
-    
     bottom: 10%;
-    /* 10% space from the bottom of the screen */
-    
     left: 25%;
-    /* 25% space from the left of the screen */
-    
     right: 25%;
-    /* 25% space from the right of the screen */
-    /* This centers the container and makes it responsive */
-    
     background-color: white;
-    /* Sets the background color to white */
-    /* This creates the "card" effect over the gradient */
-    
     border-radius: 20px;
-    /* Rounds the corners with 20px radius */
-    /* Makes the container look like a modern card */
-    
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-    /* Adds a shadow below the container */
-    /* 0 = no horizontal offset, 10px = vertical offset */
-    /* 40px = blur radius, rgba = color with transparency */
-    /* This makes the card appear to "float" above the background */
-    
     padding: 40px;
-    /* Adds 40px of space inside the container on all sides */
-    /* Prevents content from touching the edges */
-    
     overflow-y: auto;
-    /* Allows vertical scrolling if content overflows */
-    /* "auto" only shows scrollbar when needed */
-    
     display: flex;
-    /* Enables flexbox for the container */
-    
     flex-direction: column;
-    /* Stacks children vertically instead of horizontally */
-    
     max-height: 80vh;
-    /* Maximum height is 80% of viewport height */
-    /* Prevents the container from getting too tall on large screens */
 }
-
-
-/* ===== APPLICATION CONTAINER ===== */
-/* Contains all the to-do list functionality */
 
 .app-container {
-    /* Container for the entire to-do list application */
-    
     width: 100%;
-    /* Takes full width of parent (.mainbg) */
-    
     display: flex;
-    /* Enables flexbox layout */
-    
     flex-direction: column;
-    /* Stacks children vertically */
-    
     gap: 25px;
-    /* Adds 25px space between all child elements */
-    /* This is cleaner than using margins on individual elements */
 }
-
-
-/* ===== HEADING STYLES ===== */
 
 .app-container h1 {
-    /* Styles the main "My To-Do List" heading */
-    
     margin: 0;
-    /* Removes default margin */
-    
     font-size: 32px;
-    /* Sets large text size for prominence */
-    
     color: #2c3e50;
-    /* Dark blue-gray color for the text */
-    
     text-align: center;
-    /* Centers the heading text */
-    
     font-weight: 700;
-    /* Makes the text bold (700 is bold weight) */
-    
     letter-spacing: -0.5px;
-    /* Slightly reduces space between letters */
-    /* Makes the text feel more cohesive */
 }
 
-
-/* ===== FORM STYLES ===== */
-
 #todo-form {
-    /* Styles the form element that contains input and button */
-    
     display: flex;
-    /* Enables flexbox layout */
-    
     flex-direction: column;
-    /* Stacks form children vertically */
-    
     gap: 10px;
-    /* 10px space between input group and error message */
 }
 
 .input-group {
-    /* Container that groups the input field and button together */
-    
     display: flex;
-    /* Enables flexbox to place input and button side by side */
-    
     gap: 10px;
-    /* 10px space between input and button */
-    
     width: 100%;
-    /* Takes full width of parent */
 }
 
-
-/* ===== INPUT FIELD STYLES ===== */
-
 #task-input {
-    /* Styles the text input where users type tasks */
-    
     flex: 1;
-    /* Takes up all available space (pushes button to the right) */
-    /* This makes the input field grow to fill the container */
-    
     padding: 15px 20px;
-    /* 15px top/bottom padding, 20px left/right padding */
-    /* Creates comfortable space inside the input */
-    
     font-size: 16px;
-    /* Sets text size inside the input */
-    
     border: 2px solid #e0e0e0;
-    /* 2px solid border with light gray color */
-    
     border-radius: 10px;
-    /* Rounds the corners */
-    
     outline: none;
-    /* Removes the default browser outline when focused */
-    
     transition: all 0.3s ease;
-    /* Smoothly animates changes over 0.3 seconds */
-    /* "all" means it applies to all properties that change */
-    
     font-family: inherit;
-    /* Uses the same font as parent elements */
 }
 
 #task-input:focus {
-    /* Styles applied when user clicks into the input field */
-    
     border-color: #667eea;
-    /* Changes border to purple when focused */
-    
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    /* Adds a subtle purple glow around the input */
-    /* Creates a modern "focus ring" effect */
 }
 
 #task-input::placeholder {
-    /* Styles the placeholder text ("Enter a new task...") */
-    
     color: #999;
-    /* Light gray color for the placeholder */
 }
 
-
-/* ===== BUTTON STYLES ===== */
-
 .add-btn {
-    /* Styles the "Add Task" button */
-    
     padding: 15px 30px;
-    /* 15px top/bottom, 30px left/right padding */
-    
     font-size: 16px;
-    /* Sets button text size */
-    
     font-weight: 600;
-    /* Makes text semi-bold */
-    
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    /* Purple gradient background */
-    /* 135deg makes it diagonal, 0% to 100% is the gradient range */
-    
     color: white;
-    /* White text color for contrast */
-    
     border: none;
-    /* Removes default button border */
-    
     border-radius: 10px;
-    /* Rounds the corners */
-    
     cursor: pointer;
-    /* Changes cursor to pointer (hand) when hovering */
-    
     transition: all 0.3s ease;
-    /* Smoothly animates changes */
-    
     display: flex;
-    /* Enables flexbox for button content */
-    
     align-items: center;
-    /* Vertically centers the text and icon */
-    
     gap: 8px;
-    /* Space between the "+" and "Add Task" text */
-    
     white-space: nowrap;
-    /* Prevents text from wrapping to next line */
 }
 
 .add-btn span {
-    /* Styles the "+" symbol inside the button */
-    
     font-size: 22px;
-    /* Makes the + larger than the text */
-    
     font-weight: 700;
-    /* Makes it bold */
 }
 
 .add-btn:hover {
-    /* Styles applied when user hovers over the button */
-    
     transform: translateY(-2px);
-    /* Moves button up by 2px */
-    /* Creates a subtle "lift" effect */
-    
     box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-    /* Adds a purple shadow that makes button appear to float */
 }
 
 .add-btn:active {
-    /* Styles applied when button is clicked/pressed */
-    
     transform: translateY(0);
-    /* Returns button to original position */
-    /* Makes it feel like button is being pressed down */
 }
 
 
-/* ===== ERROR MESSAGE STYLES ===== */
+
 
 .error-message {
-    /* Styles the validation error message */
-    
     padding: 12px 20px;
-    /* Adds padding inside the error message box */
-    
     background-color: #fee;
-    /* Very light red/pink background */
-    
     color: #c33;
-    /* Dark red text color */
-    
     border-radius: 8px;
-    /* Rounds the corners */
-    
     border-left: 4px solid #c33;
-    /* Thick red border on the left side */
-    /* This is a common pattern for alert messages */
-    
     font-size: 14px;
-    /* Slightly smaller text size */
-    
     animation: shake 0.3s ease;
-    /* Applies shake animation when shown */
-    /* This draws attention to the error */
 }
 
 .error-message.hidden {
-    /* When the "hidden" class is present */
-    
     display: none;
-    /* Completely hides the error message */
-    /* JavaScript toggles this class to show/hide the error */
 }
 
 @keyframes shake {
-    /* Defines the shake animation for error messages */
-    
-    0%, 100% {
-        /* At start and end */
-        transform: translateX(0);
-        /* Element is in normal position */
-    }
-    
-    25% {
-        /* Quarter way through */
-        transform: translateX(-10px);
-        /* Move left by 10px */
-    }
-    
-    75% {
-        /* Three-quarters through */
-        transform: translateX(10px);
-        /* Move right by 10px */
-    }
+    0%, 100% {transform: translateX(0);}
+    25% {transform: translateX(-10px);}
+    75% {transform: translateX(10px);}
 }
 
-
-/* ===== TASK LIST STYLES ===== */
-
 .task-list {
-    /* Styles the <ul> element that contains all tasks */
-    
     list-style: none;
-    /* Removes default bullet points */
-    
     padding: 0;
-    /* Removes default padding */
-    
     margin: 0;
-    /* Removes default margin */
-    
     display: flex;
-    /* Enables flexbox */
-    
     flex-direction: column;
-    /* Stacks tasks vertically */
-    
     gap: 12px;
-    /* 12px space between each task */
 }
 
 .task-item {
-    /* Styles each individual task (created by JavaScript) */
-    
     display: flex;
-    /* Enables flexbox for task layout */
-    
     align-items: center;
-    /* Vertically centers all elements in the task */
-    
     gap: 12px;
-    /* Space between checkbox, text, and delete button */
-    
     padding: 16px 20px;
-    /* Padding inside each task item */
-    
     background-color: #f8f9fa;
-    /* Very light gray background */
-    
     border-radius: 10px;
-    /* Rounds the corners */
-    
     transition: all 0.3s ease;
-    /* Smoothly animates changes */
-    
     border: 2px solid transparent;
-    /* Invisible border (becomes visible on hover) */
 }
 
 .task-item:hover {
-    /* Styles when hovering over a task */
-    
     background-color: #e9ecef;
-    /* Slightly darker gray background */
-    
     border-color: #dee2e6;
-    /* Makes the border visible with light gray color */
-    
     transform: translateX(5px);
-    /* Shifts task 5px to the right */
-    /* Creates a subtle sliding effect */
 }
-
-
-/* ===== CHECKBOX STYLES ===== */
 
 .task-checkbox {
-    /* Styles the checkbox for marking tasks as done */
-    
     width: 22px;
-    /* Sets width of checkbox */
-    
     height: 22px;
-    /* Sets height of checkbox */
-    
     cursor: pointer;
-    /* Shows pointer cursor when hovering */
-    
     accent-color: #667eea;
-    /* Colors the checkbox when checked (modern CSS property) */
-    /* This makes the checkbox match the purple theme */
-    
     flex-shrink: 0;
-    /* Prevents checkbox from shrinking if task text is long */
 }
 
-
-/* ===== TASK TEXT STYLES ===== */
-
 .task-text {
-    /* Styles the task name/description text */
-    
     flex: 1;
-    /* Takes up all available space between checkbox and delete button */
-    
     font-size: 16px;
-    /* Sets text size */
-    
     color: #2c3e50;
-    /* Dark blue-gray text color */
-    
     word-break: break-word;
-    /* Breaks long words to prevent overflow */
-    /* Ensures long task names don't break the layout */
-    
     transition: all 0.3s ease;
-    /* Smoothly animates changes */
 }
 
 .task-item.completed .task-text {
-    /* When task has "completed" class, style the text differently */
-    /* This selector targets .task-text inside .task-item.completed */
-    
     text-decoration: line-through;
-    /* Draws a line through the text */
-    /* Visual indicator that task is done */
-    
     color: #999;
-    /* Changes text to gray */
-    
     opacity: 0.6;
-    /* Makes text semi-transparent */
 }
 
-
-/* ===== DELETE BUTTON STYLES ===== */
-
 .delete-btn {
-    /* Styles the delete button for each task */
-    
     background-color: #ff6b6b;
-    /* Red background color */
-    
     color: white;
-    /* White text color */
-    
     border: none;
-    /* No border */
-    
     padding: 8px 16px;
-    /* Padding inside button */
-    
     border-radius: 6px;
-    /* Rounded corners */
-    
     cursor: pointer;
-    /* Pointer cursor on hover */
-    
     font-size: 14px;
-    /* Slightly smaller text */
-    
     font-weight: 600;
-    /* Semi-bold text */
-    
     transition: all 0.3s ease;
-    /* Smooth animations */
-    
     flex-shrink: 0;
-    /* Prevents button from shrinking */
 }
 
 .delete-btn:hover {
-    /* Hover effect for delete button */
-    
     background-color: #ff5252;
-    /* Darker red on hover */
-    
     transform: scale(1.05);
-    /* Slightly enlarges the button */
-    /* Makes it feel interactive */
 }
 
 .delete-btn:active {
-    /* When button is clicked */
-    
     transform: scale(0.95);
-    /* Shrinks button slightly */
-    /* Creates a "press" effect */
 }
-
-
-/* ===== EMPTY STATE STYLES ===== */
 
 .empty-state {
-    /* Styles shown when there are no tasks (created by JavaScript) */
-    
     text-align: center;
-    /* Centers the text */
-    
     padding: 40px 20px;
-    /* Generous padding around the message */
-    
     color: #999;
-    /* Light gray text */
-    
     font-size: 16px;
-    /* Regular text size */
-    
     font-style: italic;
-    /* Makes text italic */
 }
 
-
-/* ===== RESPONSIVE DESIGN ===== */
-/* Makes the app work well on smaller screens */
-
 @media (max-width: 768px) {
-    /* These styles apply only when screen width is 768px or less */
-    /* This is typically tablets and mobile devices */
-    
     .mainbg {
-        /* Adjusts the white container for smaller screens */
-        
         left: 5%;
-        /* Less space on the left */
-        
         right: 5%;
-        /* Less space on the right */
-        
         top: 5%;
-        /* Less space on top */
-        
         bottom: 5%;
-        /* Less space on bottom */
-        /* This makes the container larger on small screens */
-        
         padding: 20px;
-        /* Reduces internal padding */
     }
-    
+
     .input-group {
-        /* Changes layout of input and button on small screens */
-        
         flex-direction: column;
-        /* Stacks input and button vertically instead of horizontally */
     }
-    
+
     .add-btn {
-        /* Adjusts button for vertical layout */
-        
         width: 100%;
-        /* Makes button full width */
-        
         justify-content: center;
-        /* Centers button content */
     }
     
     .app-container h1 {
-        /* Makes heading smaller on mobile */
-        
         font-size: 24px;
-        /* Smaller font size */
     }
 }
