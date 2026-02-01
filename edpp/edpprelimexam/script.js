@@ -18,7 +18,7 @@
         localStorage.setItem('tasks', JSON.stringify(tasks));
     }
     
-    function renderTasks() {
+    function renderTasks() {    
         taskList.innerHTML = '';
 
         if (tasks.length === 0) {            
@@ -116,7 +116,7 @@
         const taskText = taskInput.value.trim();
         
         if (taskText === '') {
-            showError();
+            showError();    
             return;
         }
         
