@@ -1,12 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Home, Mail, BookOpen, X } from "lucide-react";
+import { MapPin, Calendar, Code, Coffee, ExternalLink, ChevronRight, X } from "lucide-react";
 import { Divider } from 'primereact/divider';
-import { Card } from 'primereact/card';
-import { Button } from 'primereact/button';
 import BlogImageGallery from "./components/BlogImageGallery";
 
 interface ContentItem {
@@ -19,66 +16,48 @@ interface ContentItem {
   images?: string[];
 }
 
-const CHAR_LIMIT = 200; // Characters before cutoff
+const CHAR_LIMIT = 200;
 const YOUTUBE_API_KEY = "AIzaSyA1K8QUA-RC45oGRCvpEqyNaIyrJNXsPzY";
-const GIGI_CHANNEL_ID = "UCDHABijvPBnJm7F-KlNME3w"; // Gigi Murin's channel
+const GIGI_CHANNEL_ID = "UCDHABijvPBnJm7F-KlNME3w";
 const FALLBACK_VIDEO_ID = "8zWz92f_HGs";
 
 export default function HomePage() {
   const [contentItems, setContentItems] = useState<ContentItem[]>([]);
-  const [expandedId, setExpandedId] = useState<number | null>(null);
   const [imageModalOpen, setImageModalOpen] = useState(false);
   const [blogModalOpen, setBlogModalOpen] = useState(false);
   const [selectedBlog, setSelectedBlog] = useState<ContentItem | null>(null);
   const [youtubeVideoId, setYoutubeVideoId] = useState(FALLBACK_VIDEO_ID);
   const [youtubeTitle, setYoutubeTitle] = useState("Loading...");
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     fetch('/content.json')
       .then(res => res.json())
-      .then(data => setContentItems(data));
+      .then(data => setContentItems(data))
+      .catch(() => {});
   }, []);
 
-  
-
-useEffect(() => {
-  console.log("useEffect triggered!"); // ADD THIS
-  console.log("API Key:", YOUTUBE_API_KEY ? "EXISTS" : "MISSING"); // ADD THIS
-  console.log("Channel ID:", GIGI_CHANNEL_ID ? "EXISTS" : "MISSING"); // ADD THIS
-  
-  const fetchLatestVideo = async () => {
-    console.log("fetchLatestVideo started"); // ADD THIS
-    try {
-      const response = await fetch(
-        `https://www.googleapis.com/youtube/v3/search?key=${YOUTUBE_API_KEY}&channelId=${GIGI_CHANNEL_ID}&part=snippet&order=date&maxResults=1&type=video`
-      );
-      
-      console.log("Response status:", response.status); // THIS ONE TOO
-      const data = await response.json();
-      console.log("API Response:", data); // AND THIS
-      
-      if (data.error) {
-        console.error("YouTube API Error:", data.error);
-        return;
+  useEffect(() => {
+    const fetchLatestVideo = async () => {
+      try {
+        const response = await fetch(
+          `https://www.googleapis.com/youtube/v3/search?key=${YOUTUBE_API_KEY}&channelId=${GIGI_CHANNEL_ID}&part=snippet&order=date&maxResults=1&type=video`
+        );
+        const data = await response.json();
+        
+        if (data.items && data.items.length > 0) {
+          setYoutubeVideoId(data.items[0].id.videoId);
+          setYoutubeTitle(data.items[0].snippet.title);
+        }
+      } catch (error) {
+        console.error("Error fetching YouTube video:", error);
+        setYoutubeTitle("Latest Stream");
       }
-      
-      if (data.items && data.items.length > 0) {
-        const videoId = data.items[0].id.videoId;
-        const title = data.items[0].snippet.title;
-        console.log("Setting video:", videoId, title); // ADD THIS
-        setYoutubeVideoId(videoId);
-        setYoutubeTitle(title);
-      } else {
-        console.log("No items found in response"); // ADD THIS
-      }
-    } catch (error) {
-      console.error("Error fetching YouTube video:", error);
-      setYoutubeTitle("Latest Stream");
-    }
-  };
-  
-  fetchLatestVideo();
-}, []);
+    };
+    
+    fetchLatestVideo();
+  }, []);
 
   const isTruncated = (content: string) => content.length > CHAR_LIMIT;
   const truncateText = (content: string) => content.substring(0, CHAR_LIMIT) + "...";
@@ -94,237 +73,302 @@ useEffect(() => {
   };
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden">
-      
-      <div className="flex min-h-screen pt-20">
-        {/* Left Sidebar - Profile */}
-        <div className="w-1/4 px-6 py-8 flex items-start justify-center">
-          <div className="bg-white rounded-lg shadow-lg p-8 sticky top-24 w-full max-w-xs hover:shadow-2xl hover:scale-105 transition-all duration-300 ease-out">
-            {/* Profile Image */}
-            <div className="flex justify-center mb-8">
-              <button
-                onClick={() => setImageModalOpen(true)}
-                className="relative cursor-pointer group"
-              >
-                <img 
-                  src="\images\Screenshot 2026-01-21 155754.png" 
-                  alt="profile"
-                  className="w-40 h-40 rounded-full object-cover border-4 border-blue-500 hover:scale-110 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 rounded-full bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
-              </button>
-            </div>
+    <div className="min-h-screen">
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          
+          {/* Left Sidebar - Profile */}
+          <aside className={`lg:col-span-3 ${mounted ? 'animate-slideInLeft' : 'opacity-0'}`}>
+            <div className="sticky top-24 space-y-6">
+              {/* Profile Card */}
+              <div className="bg-[var(--card-bg)] border border-[var(--border)] rounded-lg p-6">
+                {/* Profile Image */}
+                <div 
+                  onClick={() => setImageModalOpen(true)}
+                  className="relative w-32 h-32 mx-auto mb-4 cursor-pointer group"
+                >
+                  <img 
+                    src="/images/Screenshot 2026-01-21 155754.png" 
+                    alt="Lloyd Joshua M. Matobato"
+                    className="w-full h-full rounded-full object-cover border-2 border-[var(--border)] transition-transform group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[var(--accent)]/0 to-[var(--accent)]/0 group-hover:from-[var(--accent)]/10 group-hover:to-[var(--accent)]/20 transition-all" />
+                </div>
 
-            {/* Profile Info */}
-            <div className="text-center space-y-4">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">Lloyd Joshua M. Matobato</h2>
-                <p className="text-gray-600 font-medium">CS Student</p>
+                {/* Name & Title */}
+                <div className="text-center mb-4">
+                  <h1 className="text-xl font-bold mb-1">Lloyd Joshua M. Matobato</h1>
+                  <p className="text-[var(--muted)] text-sm">CS Student</p>
+                </div>
+
+                {/* Bio */}
+                <p className="text-sm text-[var(--muted)] text-center mb-4">
+                  Building stuff and learning things
+                </p>
+
+                {/* Quick Info */}
+                <div className="space-y-2 text-sm mb-4">
+                  <div className="flex items-center gap-2 text-[var(--muted)]">
+                    <MapPin size={16} />
+                    <span>Davao, Philippines</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-[var(--muted)]">
+                    <Calendar size={16} />
+                    <span>Joined January 2026</span>
+                  </div>
+                </div>
+
+                <Divider className="my-4" style={{ borderColor: 'var(--border)' }} />
+
+                {/* Stats */}
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-[var(--accent)]">2.5</div>
+                    <div className="text-xs text-[var(--muted)]">Projects</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-[var(--accent)]">2+</div>
+                    <div className="text-xs text-[var(--muted)]">Years</div>
+                  </div>
+                </div>
+
+                <Divider className="my-4" style={{ borderColor: 'var(--border)' }} />
+
+                {/* Action Buttons */}
+                <div className="space-y-2">
+                  <Link 
+                    href="/contact" 
+                    className="block w-full px-4 py-2 border border-[var(--border)] hover:border-[var(--accent)] text-[var(--foreground)] rounded-md text-center text-sm font-medium transition-all hover:-translate-y-0.5"
+                  >
+                    Get in Touch
+                  </Link>
+                  <Link 
+                    href="/resources" 
+                    className="block w-full px-4 py-2 border border-[var(--border)] hover:border-[var(--accent)] text-[var(--foreground)] rounded-md text-center text-sm font-medium transition-all hover:-translate-y-0.5"
+                  >
+                    View Resources
+                  </Link>
+                </div>
               </div>
 
-              <p className="text-sm text-gray-500 leading-relaxed">
-                guh
+              {/* Skills/Tech Stack */}
+              <div className="bg-[var(--card-bg)] border border-[var(--border)] rounded-lg p-6">
+                <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                  <Code size={16} />
+                  Tech Stack
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {['React', 'Next.js', 'TypeScript', 'Tailwind', 'Node.js'].map((tech) => (
+                    <span key={tech} className="tag">
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </aside>
+
+          {/* Main Content Area */}
+          <main className={`lg:col-span-6 space-y-6 ${mounted ? 'animate-fadeInUp stagger-2' : 'opacity-0'}`}>
+            {/* Welcome Section */}
+            <div className="bg-[var(--card-bg)] border border-[var(--border)] rounded-lg p-8">
+              <h2 className="text-3xl font-bold mb-2">
+                Hey there! <span className="inline-block animate-pulse">👋</span>
+              </h2>
+              <p className="text-[var(--muted)] leading-relaxed">
+                Welcome to my digital space. I'm a computer science student passionate about web development, 
+                open source, and building things that matter. Check out my latest entries below.
               </p>
+            </div>
 
-              <Divider />
-
-              {/* Stats or Quick Info */}
-              <div className="space-y-3">
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-gray-600">Projects</span>
-                  <span className="font-bold text-blue-600">2.1 and a half</span>
-                </div>
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-gray-600">Experience</span>
-                  <span className="font-bold text-blue-600">0.2 decades</span>
-                </div>
+            {/* Content Feed */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-bold">Recent Entries</h3>
+                <span className="text-sm text-[var(--muted)]">{contentItems.length} posts</span>
               </div>
 
-              <Divider />
+              {contentItems.length === 0 ? (
+                <div className="bg-[var(--card-bg)] border border-[var(--border)] rounded-lg p-8 text-center">
+                  <Coffee size={48} className="mx-auto mb-4 text-[var(--muted)]" />
+                  <p className="text-[var(--muted)]">No entries yet. Check back soon!</p>
+                </div>
+              ) : (
+                contentItems.map((item, index) => (
+                  <article
+                    key={item.id}
+                    onClick={() => openBlogModal(item)}
+                    className={`bg-[var(--card-bg)] border border-[var(--border)] rounded-lg p-6 card-hover cursor-pointer animate-fadeInUp stagger-${Math.min(index + 3, 5)}`}
+                  >
+                    {/* Header */}
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1">
+                        <h4 className="text-lg font-semibold mb-1 hover:text-[var(--accent)] transition-colors">
+                          {item.title}
+                        </h4>
+                        <time className="text-xs text-[var(--muted)]">
+                          {new Date(item.date).toLocaleDateString('en-US', { 
+                            month: 'short', 
+                            day: 'numeric', 
+                            year: 'numeric' 
+                          })}
+                        </time>
+                      </div>
+                      <ChevronRight size={20} className="text-[var(--muted)] flex-shrink-0 mt-1" />
+                    </div>
 
-              {/* Social Links */}
-              <div className="space-y-2">
-                <Link href="/contact" className="block w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
-                  Contact Me
-                </Link>
-                <Link href="/resources" className="block w-full border-2 border-blue-600 text-blue-600 py-2 rounded-lg hover:bg-blue-50 transition-colors text-sm font-medium">
-                  View Work
-                </Link>
+                    {/* Image Gallery Preview */}
+                    {item.images && item.images.length > 0 && (
+                      <div className="mb-4">
+                        <BlogImageGallery images={item.images} />
+                      </div>
+                    )}
+
+                    {/* Content Preview */}
+                    <p className="text-sm text-[var(--muted)] mb-4 line-clamp-3 whitespace-pre-wrap">
+                      {truncateText(item.content)}
+                    </p>
+
+                    {/* Tags */}
+                    <div className="flex flex-wrap gap-2">
+                      {item.tags.map((tag) => (
+                        <span key={tag} className="tag">
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
+                  </article>
+                ))
+              )}
+            </div>
+          </main>
+
+          {/* Right Sidebar */}
+          <aside className={`lg:col-span-3 ${mounted ? 'animate-slideInRight stagger-3' : 'opacity-0'}`}>
+            <div className="sticky top-24 space-y-6">
+              {/* Featured Content */}
+              <div className="bg-[var(--card-bg)] border border-[var(--border)] rounded-lg p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-semibold">Worth Checking Out</h3>
+                  <ExternalLink size={14} className="text-[var(--muted)]" />
+                </div>
+                
+                {/* YouTube Embed */}
+                <div className="relative w-full overflow-hidden rounded-md bg-black mb-3" style={{ paddingBottom: "56.25%" }}>
+                  <iframe
+                    className="absolute inset-0 w-full h-full"
+                    src={`https://www.youtube.com/embed/${youtubeVideoId}`}
+                    title={youtubeTitle}
+                    allowFullScreen
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  />
+                </div>
+                
+                <p className="text-sm font-medium mb-1">Gigi Murin</p>
+                <p className="text-xs text-[var(--muted)] line-clamp-2">{youtubeTitle}</p>
+              </div>
+
+              {/* Contribution Graph Placeholder */}
+              <div className="bg-[var(--card-bg)] border border-[var(--border)] rounded-lg p-6">
+                <h3 className="text-sm font-semibold mb-4">Activity</h3>
+                <div className="grid grid-cols-7 gap-1">
+                  {Array.from({ length: 91 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="aspect-square rounded-sm transition-colors hover:border hover:border-[var(--accent)]"
+                      style={{
+                        backgroundColor: Math.random() > 0.7 
+                          ? `rgba(88, 166, 255, ${Math.random() * 0.8 + 0.2})` 
+                          : 'var(--border)'
+                      }}
+                    />
+                  ))}
+                </div>
+                <p className="text-xs text-[var(--muted)] mt-3">
+                  Less <span className="inline-flex gap-1 mx-2">
+                    <span className="w-2 h-2 rounded-sm" style={{ backgroundColor: 'var(--border)' }} />
+                    <span className="w-2 h-2 rounded-sm" style={{ backgroundColor: 'rgba(88, 166, 255, 0.3)' }} />
+                    <span className="w-2 h-2 rounded-sm" style={{ backgroundColor: 'rgba(88, 166, 255, 0.6)' }} />
+                    <span className="w-2 h-2 rounded-sm" style={{ backgroundColor: 'rgba(88, 166, 255, 0.9)' }} />
+                  </span> More
+                </p>
               </div>
             </div>
-          </div>
-        </div>
-
-{/* Center Content Area - Cards */}
-<div className="w-1/2 px-8 py-8 flex flex-col items-center">
-  <div className="w-full max-w-2xl space-y-8">
-    {/* Title Container with White Background */}
-    <div className="bg-white rounded-lg shadow-lg p-8">
-      <h3 className="text-4xl font-bold text-gray-900">Entries</h3>
-    </div>
-
-    {/* Content Cards */}
-    <div className="space-y-8">
-      {contentItems.map((item) => (
-        <div 
-          key={item.id}
-          onClick={() => openBlogModal(item)}
-          className="hover:scale-105 transition-transform duration-300 cursor-pointer origin-center"
-        >
-<Card className="shadow-md hover:shadow-lg transition-shadow h-full bg-white">
-  <div className="p-8">
-    <h4 className="text-2xl font-bold text-gray-900 mb-2">{item.title}</h4>
-    <p className="text-sm text-gray-500 mb-4">{new Date(item.date).toLocaleDateString()}</p>
-    
-    {/* Image Gallery Preview */}
-    {item.images && item.images.length > 0 && (
-      <BlogImageGallery images={item.images} />
-    )}
-    
-    {/* Content with gradient fade effect and newline handling */}
-    <div className="relative mb-6">
-      <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
-        {expandedId === item.id ? item.content : truncateText(item.content)}
-      </p>
-      {expandedId !== item.id && isTruncated(item.content) && (
-        <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
-      )}
-    </div>
-    
-    {/* Tags */}
-    <div className="flex gap-2 mb-6 flex-wrap">
-      {item.tags.map((tag) => (
-        <span key={tag} className="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
-          {tag}
-        </span>
-      ))}
-    </div>
-
-    {/* Read More Button */}
-    {isTruncated(item.content) && (
-      <>
-        {expandedId !== item.id && (
-          <Button 
-            label="Read More" 
-            className="p-button-sm p-button-outlined"
-            onClick={(e) => {
-              e.stopPropagation();
-              setExpandedId(item.id);
-            }}
-          />
-        )}
-        {expandedId === item.id && (
-          <Button 
-            label="Show Less" 
-            className="p-button-sm p-button-outlined p-button-danger"
-            onClick={(e) => {
-              e.stopPropagation();
-              setExpandedId(null);
-            }}
-          />
-        )}
-      </>
-    )}
-  </div>
-</Card>
-        </div>
-      ))}
-    </div>
-  </div>
-</div>
-
-        {/* Right Sidebar - YouTube Embed */}
-        <div className="w-1/4 px-6 py-8">
-          <div className="bg-white rounded-lg shadow-lg p-6 sticky top-24">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">Check this person out</h3>
-            <div className="relative w-full overflow-hidden rounded-lg bg-black" style={{ paddingBottom: "56.25%" }}>
-              <iframe
-                className="absolute inset-0 w-full h-full"
-                src={`https://www.youtube.com/embed/${youtubeVideoId}`}
-                title={youtubeTitle}
-                allowFullScreen
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              />
-            </div>
-            <p className="text-sm text-gray-600 text-center mt-4 font-medium">Gigi Murin</p>
-            <p className="text-xs text-gray-500 text-center mt-1 truncate">{youtubeTitle}</p>
-          </div>
+          </aside>
         </div>
       </div>
 
-      {/* Image Modal - Wikipedia style */}
+      {/* Image Modal */}
       {imageModalOpen && (
         <div 
-          className="fixed inset-0 backdrop-blur-md z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fadeInUp"
           onClick={() => setImageModalOpen(false)}
         >
           <div 
-            className="bg-white rounded-lg shadow-2xl relative max-w-2xl w-full"
+            className="bg-[var(--card-bg)] border border-[var(--border)] rounded-lg relative max-w-3xl w-full overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Close Button */}
             <button
               onClick={() => setImageModalOpen(false)}
-              className="absolute top-4 right-4 bg-gray-200 hover:bg-gray-300 rounded-full p-2 transition-colors z-10"
+              className="absolute top-4 right-4 p-2 bg-[var(--hover-bg)] hover:bg-[var(--muted)] rounded-full transition-colors z-10"
             >
-              <X size={24} />
+              <X size={20} />
             </button>
-
-            {/* Image Container */}
-            <div className="flex items-center justify-center bg-white p-8">
-              <img 
-                src="\images\Screenshot 2026-01-21 155754.png" 
-                alt="profile full"
-                className="max-w-full max-h-96 object-contain"
-              />
-            </div>
+            <img 
+              src="/images/Screenshot 2026-01-21 155754.png" 
+              alt="Profile"
+              className="w-full h-auto"
+            />
           </div>
         </div>
       )}
 
-      {/* Blog Post Modal */}
+      {/* Blog Modal */}
       {blogModalOpen && selectedBlog && (
         <div 
-          className="fixed inset-0 backdrop-blur-md z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fadeInUp"
           onClick={closeBlogModal}
         >
           <div 
-            className="bg-white rounded-2xl shadow-2xl relative w-full max-w-4xl max-h-[90vh] overflow-y-auto"
+            className="bg-[var(--card-bg)] border border-[var(--border)] rounded-lg relative w-full max-w-4xl max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Close Button */}
             <button
               onClick={closeBlogModal}
-              className="sticky top-4 right-4 float-right bg-gray-200 hover:bg-gray-300 rounded-full p-2 transition-colors z-10 m-4"
+              className="sticky top-4 right-4 float-right p-2 bg-[var(--hover-bg)] hover:bg-[var(--muted)] rounded-full transition-colors z-10 m-4"
             >
-              <X size={24} />
+              <X size={20} />
             </button>
 
-            {/* Blog Content */}
-            <div className="p-12">
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">{selectedBlog.title}</h2>
-              <p className="text-sm text-gray-500 mb-6">{new Date(selectedBlog.date).toLocaleDateString()}</p>
+            <div className="p-8 md:p-12">
+              <h2 className="text-3xl font-bold mb-2">{selectedBlog.title}</h2>
+              <time className="text-sm text-[var(--muted)] block mb-6">
+                {new Date(selectedBlog.date).toLocaleDateString('en-US', { 
+                  month: 'long', 
+                  day: 'numeric', 
+                  year: 'numeric' 
+                })}
+              </time>
 
-              {/* Tags */}
-              <div className="flex gap-2 mb-8 flex-wrap">
+              <div className="flex flex-wrap gap-2 mb-6">
                 {selectedBlog.tags.map((tag) => (
-                  <span key={tag} className="text-sm bg-blue-100 text-blue-700 px-4 py-2 rounded-full">
-                    {tag}
+                  <span key={tag} className="tag">
+                    #{tag}
                   </span>
                 ))}
               </div>
 
-              <Divider />
+              <Divider className="my-6" style={{ borderColor: 'var(--border)' }} />
 
-              {/* Full Content */}
-              <p className="text-lg text-gray-700 leading-relaxed mt-8 whitespace-pre-wrap">
-                {selectedBlog.content}
-              </p>
+              <div className="prose prose-invert max-w-none">
+                <p className="text-[var(--muted)] leading-relaxed whitespace-pre-wrap">
+                  {selectedBlog.content}
+                </p>
+              </div>
 
-              {/* Modal Image Gallery */}
               {selectedBlog.images && selectedBlog.images.length > 0 && (
                 <div className="mt-8">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4">Gallery</h3>
+                  <h3 className="text-xl font-bold mb-4">Gallery</h3>
                   <BlogImageGallery images={selectedBlog.images} />
                 </div>
               )}
