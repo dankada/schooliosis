@@ -25,26 +25,21 @@ export default function BlogImageGallery({ images }: BlogImageGalleryProps) {
 
   return (
     <>
-      <div className="w-full my-6">
-        {/* The Grid: 
-            - auto-rows-auto ensures the height grows with content.
-            - No more "sideImages" slice; we map the whole array.
-        */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+      <div className="w-full my-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
           {images.map((img, idx) => (
             <div 
               key={idx} 
-              className="relative cursor-pointer overflow-hidden rounded-lg bg-gray-200 h-48 md:h-64 group"
+              className="relative cursor-pointer overflow-hidden rounded-md bg-[var(--hover-bg)] aspect-video group"
               onClick={() => openAt(idx)}
             >
               <img
                 src={img}
                 alt={`Gallery image ${idx + 1}`}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 loading="lazy"
               />
-              {/* Optional: Hover overlay to show it's clickable */}
-              <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
           ))}
         </div>
@@ -59,20 +54,33 @@ export default function BlogImageGallery({ images }: BlogImageGalleryProps) {
         showThumbnails={images.length > 1}
         showItemNavigators
         circular
-        // High z-index to ensure it sits above everything
-        baseZIndex={10000} 
+        baseZIndex={10000}
+        style={{ 
+          background: 'rgba(0, 0, 0, 0.95)',
+        }}
         item={(item) => (
           <img 
             src={item.itemImageSrc} 
             alt="Full size" 
-            style={{ width: '100%', display: 'block', maxHeight: '90vh', objectFit: 'contain' }} 
+            style={{ 
+              width: '100%', 
+              display: 'block', 
+              maxHeight: '90vh', 
+              objectFit: 'contain' 
+            }} 
           />
         )}
         thumbnail={(item) => (
           <img 
             src={item.thumbnailImageSrc} 
             alt="Thumbnail" 
-            style={{ display: 'block', width: '80px', height: '60px', objectFit: 'cover' }} 
+            style={{ 
+              display: 'block', 
+              width: '80px', 
+              height: '60px', 
+              objectFit: 'cover',
+              borderRadius: '4px'
+            }} 
           />
         )}
       />

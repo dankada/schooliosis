@@ -1,0 +1,526 @@
+// ===== WAIT FOR PAGE TO LOAD =====
+// This ensures all HTML elements are loaded before JavaScript tries to access them
+
+document.addEventListener('DOMContentLoaded', function() {
+    // addEventListener attaches an event listener to the document object
+    // 'DOMContentLoaded' is the event that fires when HTML is fully loaded
+    // function() {...} is the code that runs when the event happens
+    // Everything inside this function waits until the page is ready
+    
+    
+    // ===== GET REFERENCES TO HTML ELEMENTS =====
+    // We need to access specific HTML elements to make them interactive
+    // document.getElementById() finds an element by its id attribute
+    
+    const todoForm = document.getElementById('todo-form');
+    // Gets the <form> element with id="todo-form"
+    // This is the form that contains the input and submit button
+    // We need this to listen for form submissions
+    
+    const taskInput = document.getElementById('task-input');
+    // Gets the <input> element with id="task-input"
+    // This is where users type their tasks
+    // We need this to get the task text that user enters
+    
+    const taskList = document.getElementById('task-list');
+    // Gets the <ul> element with id="task-list"
+    // This is the container where we'll add task items
+    // We need this to dynamically add/remove tasks
+    
+    const errorMessage = document.getElementById('error-message');
+    // Gets the <div> element with id="error-message"
+    // This is the error message shown for validation failures
+    // We need this to show/hide error messages
+    
+    
+    // ===== INITIALIZE TASKS ARRAY =====
+    // This array will store all our tasks
+    // Each task is an object with id, text, and completed status
+    
+    let tasks = [];
+    // Creates an empty array called tasks
+    // let means the variable can be reassigned later
+    // [] creates an empty array (list) that we'll fill with task objects
+    
+    
+    // ===== LOAD TASKS FROM LOCAL STORAGE =====
+    // When the page loads, we check if there are saved tasks
+    // Local Storage is a browser feature that saves data permanently
+    
+    function loadTasks() {
+        // Defines a function called loadTasks
+        // Functions are reusable blocks of code
+        // This function retrieves saved tasks from Local Storage
+        
+        const savedTasks = localStorage.getItem('tasks');
+        // localStorage.getItem('tasks') retrieves data saved under the key 'tasks'
+        // It returns a string (or null if nothing is saved)
+        // We store this in a variable called savedTasks
+        
+        if (savedTasks) {
+            // if statement checks if savedTasks contains data
+            // If savedTasks is null or undefined, this block won't run
+            
+            tasks = JSON.parse(savedTasks);
+            // JSON.parse() converts the string back into a JavaScript array/object
+            // Local Storage only stores strings, so we saved tasks as JSON string
+            // Now we convert it back to an array and assign it to tasks
+            
+            renderTasks();
+            // Calls the renderTasks function to display the loaded tasks
+            // This will create the HTML elements for each saved task
+        }
+    }
+    
+    
+    // ===== SAVE TASKS TO LOCAL STORAGE =====
+    // Whenever tasks change, we save them to Local Storage
+    // This ensures tasks persist even when page is closed/refreshed
+    
+    function saveTasks() {
+        // Defines a function called saveTasks
+        // This function saves the current tasks array to Local Storage
+        
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+        // localStorage.setItem(key, value) saves data to Local Storage
+        // 'tasks' is the key (name) we use to identify this data
+        // JSON.stringify(tasks) converts the tasks array into a string
+        // Local Storage can only store strings, not objects or arrays directly
+        // This line saves our tasks so they're available next time
+    }
+    
+    
+    // ===== RENDER/DISPLAY TASKS ON THE PAGE =====
+    // This function creates the HTML for all tasks and displays them
+    // It's called whenever tasks change (add, delete, toggle)
+    
+    function renderTasks() {
+        // Defines a function called renderTasks
+        // This function recreates the task list from the tasks array
+        
+        taskList.innerHTML = '';
+        // Sets the innerHTML of taskList to an empty string
+        // This clears all existing content inside the <ul>
+        // We do this to avoid duplicates when re-rendering
+        
+        if (tasks.length === 0) {
+            // Checks if the tasks array is empty
+            // tasks.length returns the number of items in the array
+            // === 0 means there are no tasks
+            
+            const emptyState = document.createElement('li');
+            // document.createElement('li') creates a new <li> element
+            // This element exists in memory but isn't visible yet
+            
+            emptyState.className = 'empty-state';
+            // Sets the class attribute to 'empty-state'
+            // This applies the CSS styles defined for .empty-state
+            
+            emptyState.textContent = 'No tasks yet. Add one to get started!';
+            // textContent sets the text inside the element
+            // This is the message users see when list is empty
+            
+            taskList.appendChild(emptyState);
+            // appendChild() adds the emptyState element as a child of taskList
+            // Now the empty state message appears in the <ul>
+            
+            return;
+            // return exits the function early
+            // Since there are no tasks, we don't need to run the rest of the code
+        }
+        
+        // If we get here, there are tasks to display
+        // We'll loop through each task and create HTML for it
+        
+        tasks.forEach(function(task) {
+            // forEach() loops through each item in the tasks array
+            // For each task object, it runs this function
+            // task is the parameter representing the current task object
+            
+            const taskItem = createTaskElement(task);
+            // Calls createTaskElement function with the current task
+            // This function creates and returns a complete <li> element for the task
+            // We store this element in taskItem variable
+            
+            taskList.appendChild(taskItem);
+            // Adds the task element to the <ul>
+            // Now this task appears on the page
+        });
+        // The forEach loop continues until all tasks are processed
+    }
+    
+    
+    // ===== CREATE A SINGLE TASK ELEMENT =====
+    // This function builds the HTML structure for one task
+    // It creates checkbox, text, and delete button
+    
+    function createTaskElement(task) {
+        // Defines a function that takes a task object as parameter
+        // Returns a complete <li> element with all task components
+        
+        const taskItem = document.createElement('li');
+        // Creates a new <li> element for this task
+        
+        taskItem.className = 'task-item';
+        // Sets the class to 'task-item' for CSS styling
+        
+        if (task.completed) {
+            // Checks if the task's completed property is true
+            
+            taskItem.classList.add('completed');
+            // classList.add() adds another class to the element
+            // Now the element has both 'task-item' and 'completed' classes
+            // This applies the strikethrough styling defined in CSS
+        }
+        
+        
+        // ===== CREATE CHECKBOX =====
+        
+        const checkbox = document.createElement('input');
+        // Creates a new <input> element
+        
+        checkbox.type = 'checkbox';
+        // Sets the type attribute to 'checkbox'
+        // This makes it render as a checkbox instead of a text input
+        
+        checkbox.className = 'task-checkbox';
+        // Sets the class for CSS styling
+        
+        checkbox.checked = task.completed;
+        // Sets the checked property based on task.completed
+        // If task.completed is true, checkbox will be checked
+        // If false, checkbox will be unchecked
+        
+        checkbox.addEventListener('change', function() {
+            // Adds an event listener for the 'change' event
+            // 'change' fires when checkbox is checked or unchecked
+            // The function inside runs when the event happens
+            
+            toggleTask(task.id);
+            // Calls toggleTask function with this task's id
+            // This will mark the task as completed or uncompleted
+        });
+        
+        
+        // ===== CREATE TASK TEXT =====
+        
+        const taskText = document.createElement('span');
+        // Creates a new <span> element for the task text
+        
+        taskText.className = 'task-text';
+        // Sets the class for CSS styling
+        
+        taskText.textContent = task.text;
+        // Sets the text content to the task's text property
+        // This is what the user typed when creating the task
+        
+        
+        // ===== CREATE DELETE BUTTON =====
+        
+        const deleteBtn = document.createElement('button');
+        // Creates a new <button> element
+        
+        deleteBtn.className = 'delete-btn';
+        // Sets the class for CSS styling
+        
+        deleteBtn.textContent = 'Delete';
+        // Sets the button text to "Delete"
+        
+        deleteBtn.addEventListener('click', function() {
+            // Adds a click event listener to the delete button
+            // When button is clicked, this function runs
+            
+            deleteTask(task.id);
+            // Calls deleteTask function with this task's id
+            // This will remove the task from the array and re-render
+        });
+        
+        
+        // ===== ASSEMBLE THE TASK ITEM =====
+        // Now we add all the pieces (checkbox, text, button) to the task item
+        
+        taskItem.appendChild(checkbox);
+        // Adds checkbox as first child of the <li>
+        
+        taskItem.appendChild(taskText);
+        // Adds task text as second child of the <li>
+        
+        taskItem.appendChild(deleteBtn);
+        // Adds delete button as third child of the <li>
+        
+        return taskItem;
+        // Returns the complete task element
+        // The renderTasks function will add this to the page
+    }
+    
+    
+    // ===== ADD NEW TASK =====
+    // This function adds a new task to the tasks array
+    // It's called when user submits the form
+    
+    function addTask(taskText) {
+        // Defines a function that takes taskText as parameter
+        // taskText is the string the user typed in the input field
+        
+        const newTask = {
+            // Creates a new object to represent the task
+            // Objects use {} and contain key-value pairs
+            
+            id: Date.now(),
+            // Generates a unique ID using current timestamp
+            // Date.now() returns milliseconds since January 1, 1970
+            // This number is always unique and increasing
+            
+            text: taskText,
+            // Stores the task text from the parameter
+            
+            completed: false
+            // New tasks start as not completed (false)
+        };
+        
+        tasks.push(newTask);
+        // push() adds the newTask object to the end of tasks array
+        // Now the tasks array has one more item
+        
+        saveTasks();
+        // Saves the updated tasks array to Local Storage
+        // This ensures the new task persists
+        
+        renderTasks();
+        // Re-renders all tasks to show the new one
+        // This updates the visible list on the page
+    }
+    
+    
+    // ===== TOGGLE TASK COMPLETION STATUS =====
+    // This function marks a task as completed or uncompleted
+    // It's called when user clicks a checkbox
+    
+    function toggleTask(taskId) {
+        // Defines a function that takes taskId as parameter
+        // taskId is the unique identifier of the task to toggle
+        
+        const task = tasks.find(function(t) {
+            // find() searches through the tasks array
+            // It runs this function for each task (t)
+            // Returns the first task where the function returns true
+            
+            return t.id === taskId;
+            // Compares the current task's id with the taskId parameter
+            // === checks for exact equality
+            // Returns true when IDs match
+        });
+        // After find() completes, task contains the matching task object
+        
+        if (task) {
+            // Checks if a task was found
+            // If no match, task would be undefined
+            
+            task.completed = !task.completed;
+            // ! is the NOT operator - it flips true to false or false to true
+            // If task.completed was true, it becomes false
+            // If it was false, it becomes true
+            // This toggles the completion status
+            
+            saveTasks();
+            // Saves the updated task status to Local Storage
+            
+            renderTasks();
+            // Re-renders all tasks to show the updated styling
+            // This applies/removes the strikethrough effect
+        }
+    }
+    
+    
+    // ===== DELETE A TASK =====
+    // This function removes a task from the tasks array
+    // It's called when user clicks the delete button
+    
+    function deleteTask(taskId) {
+        // Defines a function that takes taskId as parameter
+        // taskId is the unique identifier of the task to delete
+        
+        tasks = tasks.filter(function(task) {
+            // filter() creates a new array with only items that pass a test
+            // It runs this function for each task
+            // If function returns true, task is kept; if false, task is removed
+            
+            return task.id !== taskId;
+            // !== means "not equal to"
+            // Returns true for all tasks EXCEPT the one being deleted
+            // The task with matching ID is filtered out
+        });
+        // After filter() completes, tasks array no longer contains deleted task
+        
+        saveTasks();
+        // Saves the updated tasks array to Local Storage
+        
+        renderTasks();
+        // Re-renders the task list without the deleted task
+        // This removes it from the visible list
+    }
+    
+    
+    // ===== SHOW ERROR MESSAGE =====
+    // This function displays the validation error message
+    // It's called when user tries to submit an empty task
+    
+    function showError() {
+        // Defines a function called showError
+        // No parameters needed - it always shows the same error
+        
+        errorMessage.classList.remove('hidden');
+        // classList.remove() removes a class from the element
+        // Removing 'hidden' class makes the error visible
+        // CSS defines .hidden { display: none; }
+        
+        setTimeout(function() {
+            // setTimeout() runs a function after a delay
+            // The delay is specified in milliseconds (1000ms = 1 second)
+            
+            errorMessage.classList.add('hidden');
+            // Adds 'hidden' class back to hide the error message
+            // This happens after the timeout
+            
+        }, 3000);
+        // 3000 milliseconds = 3 seconds
+        // Error message automatically hides after 3 seconds
+    }
+    
+    
+    // ===== HANDLE FORM SUBMISSION =====
+    // This is the main event listener for adding tasks
+    // It runs when user clicks "Add Task" or presses Enter
+    
+    todoForm.addEventListener('submit', function(event) {
+        // Adds 'submit' event listener to the form
+        // submit event fires when form is submitted
+        // event parameter contains information about the submission
+        
+        event.preventDefault();
+        // preventDefault() stops the default form behavior
+        // Normally, forms refresh the page when submitted
+        // We prevent this so we can handle submission with JavaScript
+        
+        const taskText = taskInput.value.trim();
+        // Gets the value from the input field
+        // taskInput.value is the text the user typed
+        // trim() removes whitespace from beginning and end
+        // This prevents tasks that are only spaces
+        
+        if (taskText === '') {
+            // Checks if taskText is an empty string
+            // This happens if input was empty or only had whitespace
+            
+            showError();
+            // Shows the error message
+            // Tells user they need to enter a task
+            
+            return;
+            // Exits the function early
+            // Don't add an empty task
+        }
+        
+        // If we get here, the input is valid (not empty)
+        
+        addTask(taskText);
+        // Calls addTask function with the validated text
+        // This creates a new task object and adds it to the array
+        
+        taskInput.value = '';
+        // Clears the input field
+        // Sets the value to an empty string
+        // This prepares the input for the next task
+        
+        taskInput.focus();
+        // Sets focus back to the input field
+        // User can immediately start typing the next task
+        // This improves user experience - no need to click back into input
+    });
+    
+    
+    // ===== INITIALIZE THE APP =====
+    // This runs when the page first loads
+    
+    loadTasks();
+    // Calls loadTasks function to retrieve and display saved tasks
+    // If there are no saved tasks, the array stays empty
+    // If there are saved tasks, they appear on the page
+    
+}); // End of DOMContentLoaded event listener
+// Everything above runs after the HTML is fully loaded
+
+
+// ===== HOW EVERYTHING WORKS TOGETHER =====
+/*
+FLOW OF THE APPLICATION:
+
+1. PAGE LOADS:
+   - DOMContentLoaded event fires
+   - All JavaScript code inside the event listener runs
+   - loadTasks() is called
+   - If saved tasks exist, they're loaded from Local Storage
+   - renderTasks() displays all tasks on the page
+
+2. USER ADDS A TASK:
+   - User types in the input field (#task-input)
+   - User clicks "Add Task" button or presses Enter
+   - Form submit event fires
+   - event.preventDefault() stops page refresh
+   - Input value is retrieved and validated
+   - If empty: showError() displays error message
+   - If valid: addTask() creates new task object
+   - Task is added to tasks array
+   - saveTasks() saves to Local Storage
+   - renderTasks() updates the display
+   - Input field is cleared
+
+3. USER MARKS TASK AS DONE:
+   - User clicks a checkbox
+   - Change event fires on that checkbox
+   - toggleTask() is called with the task's ID
+   - find() locates the task in the array
+   - task.completed is toggled (true ↔ false)
+   - saveTasks() updates Local Storage
+   - renderTasks() re-displays all tasks
+   - CSS applies strikethrough to completed tasks
+
+4. USER DELETES A TASK:
+   - User clicks a delete button
+   - Click event fires on that button
+   - deleteTask() is called with the task's ID
+   - filter() creates new array without that task
+   - saveTasks() updates Local Storage
+   - renderTasks() re-displays remaining tasks
+
+5. PAGE REFRESH/CLOSE:
+   - Tasks are saved in Local Storage
+   - Next time page loads, loadTasks() retrieves them
+   - Application state is restored
+
+INTERACTION BETWEEN FILES:
+
+HTML (index.html):
+- Provides the structure and elements
+- Contains IDs that JavaScript uses to find elements
+- Contains classes that CSS uses for styling
+- Includes <script> tag that loads JavaScript
+
+CSS (style.css):
+- Provides visual styling for all elements
+- Applies based on classes and IDs from HTML
+- Some classes (like 'completed', 'hidden') are toggled by JavaScript
+- Creates animations and transitions
+
+JavaScript (script.js):
+- Makes HTML interactive
+- Manipulates HTML elements (add, remove, modify)
+- Adds/removes CSS classes to change appearance
+- Stores and retrieves data from Local Storage
+- Responds to user actions (clicks, form submissions)
+
+DATA FLOW:
+
+User Action → JavaScript Event → Function Execution → 
+Array Modification → Local Storage Update → DOM Update → Visual Change
+*/
