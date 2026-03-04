@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+    <body>
+        
+    <form action="index.html">
+<!--         
+        <label for="name">Namuel:</label>
+        <input type="text" id="name" name="name"><br>
+
+        <label for="email">electronic male:</label>
+        <input type="email" id="email" name="email"><br> -->
+
+        <label for="msg">teksto:</label>
+        <input type="text" id="msg" name="message"><br>
+
+        <input id="file" type="file" name="file"><br>
+
+        <button type="submit" class="button">submiet</button>
+
+    
+</form>
+<script>
+const form = document.querySelector('form');
+
+form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(form);
+
+    // const file = document.querySelector('#file');
+    // formData.append('image', file.files[0], 'image.jpeg');
+    formData.append('id', '42067');
+    
+    // const res = Object.fromEntries(formData);
+    // const payload = JSON.stringify(res);
+    console.log(formData);
+
+    for(item of formData) {
+        console.log(item[0], item[1]);
+    }
+
+    fetch('https://httpbin.org/post', {
+        method: 'POST',
+        body: formData,
+        headers: {}
+    })
+        .then(res => res.json())
+        .then(res => console.log(res));
+
+});
+</script>
+</body>
+</html>
