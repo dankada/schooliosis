@@ -5,13 +5,13 @@
 
 // ─── CONFIG ──────────────────────────────────
 const API_BASE    = "https://api.escuelajs.co/api/v1";
-const FETCH_LIMIT = 50;
+const FETCH_LIMIT = 25;
 
 // ─── STATE ───────────────────────────────────
 let allProducts      = [];
 let filteredProducts = [];
 let cart             = [];
-let currentCategoryId = "";   // "" = all categories
+let currentCategoryId = 1;   // "" = all categories
 let accessToken      = "";
 
 // ─── DOM REFS ─────────────────────────────────
@@ -34,7 +34,7 @@ window.addEventListener("DOMContentLoaded", () => {
   setTimeout(() => {
     if (window.loggedInEmail) {
       userBadge.textContent = "👤 " + window.loggedInEmail;
-      fetchCategories(); 
+      fetchProducts(); 
     }
   }, 50); 
 
@@ -49,79 +49,80 @@ function logout() {
   window.location.href = "login.html"; // This kicks them back to the login screen
 }
 
+// DISABLED, maam only wants price to be modified by de user
 // ─── FETCH CATEGORIES ─────────────────────────
-async function fetchCategories() {
-  console.log("[CATEGORIES] fetching from API...");
-  try {
-    const res  = await fetch(`${API_BASE}/categories`);
-    const all  = await res.json();
-    console.log("[CATEGORIES] raw total from API:", all.length);
+// async function fetchCategories() {
+//   console.log("[CATEGORIES] fetching from API...");
+//   try {
+//     const res  = await fetch(`${API_BASE}/categories`);
+//     const all  = await res.json();
+//     console.log("[CATEGORIES] raw total from API:", all.length);
 
-    // The Flatzi API is a public sandbox — anyone can POST junk categories.
-    // We whitelist the known-good original ones by id and sane name,
-    // then allow a few extras up to id=15 if they look clean.
-    const WHITELIST_IDS = new Set([1, 2, 3, 4, 5, 9, 10, 11, 12]);
-    const JUNK_PATTERN  = /[@%\n\r<>\\{}]/;  // signs of injection / garbage names
+//     // The Flatzi API is a public sandbox — anyone can POST junk categories.
+//     // We whitelist the known-good original ones by id and sane name,
+//     // then allow a few extras up to id=15 if they look clean.
+//     const WHITELIST_IDS = new Set([1, 2, 3, 4, 5, 9, 10, 11, 12]);
+//     const JUNK_PATTERN  = /[@%\n\r<>\\{}]/;  // signs of injection / garbage names
 
-    const cats = all.filter(c => {
-      if (WHITELIST_IDS.has(c.id)) return true;
-      if (c.id > 15) return false;                       // beyond this it's all user spam
-      if (!c.name || c.name.trim().length === 0) return false;
-      if (JUNK_PATTERN.test(c.name)) return false;
-      if (c.name.length > 40) return false;
-      return true;
-    });
+//     const cats = all.filter(c => {
+//       if (WHITELIST_IDS.has(c.id)) return true;
+//       if (c.id > 15) return false;                       // beyond this it's all user spam
+//       if (!c.name || c.name.trim().length === 0) return false;
+//       if (JUNK_PATTERN.test(c.name)) return false;
+//       if (c.name.length > 40) return false;
+//       return true;
+//     });
 
-    console.log("[CATEGORIES] after filtering:", cats.length, "categories →",
-      cats.map(c => `${c.id}:${c.name}`).join(", "));
+//     console.log("[CATEGORIES] after filtering:", cats.length, "categories →",
+//       cats.map(c => `${c.id}:${c.name}`).join(", "));
 
-    categorySelect.innerHTML = "";
+//     categorySelect.innerHTML = "";
 
-    // "All" option
-    const allOpt = document.createElement("option");
-    allOpt.value = "";
-    allOpt.textContent = "🌐 All Categories";
-    categorySelect.appendChild(allOpt);
+//     // "All" option
+//     const allOpt = document.createElement("option");
+//     allOpt.value = "";
+//     allOpt.textContent = "🌐 All Categories";
+//     categorySelect.appendChild(allOpt);
 
-    cats.forEach(cat => {
-      const opt = document.createElement("option");
-      opt.value = cat.id;
-      opt.textContent = cat.name;
-      categorySelect.appendChild(opt);
-    });
+//     cats.forEach(cat => {
+//       const opt = document.createElement("option");
+//       opt.value = cat.id;
+//       opt.textContent = cat.name;
+//       categorySelect.appendChild(opt);
+//     });
 
-    // Default to "All Categories" — individual categories on this public test API
-    // are polluted and may have fewer than 25 products. "All" reliably returns 50.
-    // The dropdown is still there for the user to filter to a single category.
-    categorySelect.value = "";
-    currentCategoryId = "";
-    console.log("[CATEGORIES] defaulting to: All Categories");
+//     // Default to "All Categories" — individual categories on this public test API
+//     // are polluted and may have fewer than 25 products. "All" reliably returns 50.
+//     // The dropdown is still there for the user to filter to a single category.
+//     categorySelect.value = "";
+//     currentCategoryId = "";
+//     console.log("[CATEGORIES] defaulting to: All Categories");
 
-    fetchProducts();
-  } catch (err) {
-    console.error("[CATEGORIES] fetch failed:", err);
-    categorySelect.innerHTML = `<option value="">⚠️ Failed to load</option>`;
-    fetchProducts();
-  }
-}
+//     fetchProducts();
+//   } catch (err) {
+//     console.error("[CATEGORIES] fetch failed:", err);
+//     categorySelect.innerHTML = `<option value="">⚠️ Failed to load</option>`;
+//     fetchProducts();
+//   }
+// }
 
-// ─── CATEGORY CHANGE ──────────────────────────
-function onCategoryChange() {
-  currentCategoryId = categorySelect.value;
-  document.getElementById("priceMin").value = "";
-  document.getElementById("priceMax").value = "";
-  fetchProducts();
-}
+// DISABLED, maam only wants price to be modified by de user
+// // ─── CATEGORY CHANGE ──────────────────────────
+// function onCategoryChange() {
+//   currentCategoryId = categorySelect.value;
+//   document.getElementById("priceMin").value = "";
+//   document.getElementById("priceMax").value = "";
+//   fetchProducts();
+// }
 
 // ─── FETCH PRODUCTS ───────────────────────────
 async function fetchProducts(priceMin = null, priceMax = null) {
   statusBar.textContent = "Loading products... ⏳";
   productGrid.innerHTML = "";
 
-  let url = `${API_BASE}/products?limit=${FETCH_LIMIT}&offset=0`;
-  if (currentCategoryId !== "") {
-    url += `&categoryId=${currentCategoryId}`;
-  }
+  let url = `${API_BASE}/products?limit=${FETCH_LIMIT}&offset=0&categoryId=${currentCategoryId}`;
+  
+  // The only user-adjustable filters are price ranges
   if (priceMin !== null) url += `&price_min=${priceMin}`;
   if (priceMax !== null) url += `&price_max=${priceMax}`;
 
