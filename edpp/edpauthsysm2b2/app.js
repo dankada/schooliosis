@@ -45,24 +45,8 @@ window.addEventListener("DOMContentLoaded", () => {
 
 // ─── AUTH: LOGOUT ─────────────────────────────
 function logout() {
-  localStorage.removeItem("access_token");
-  localStorage.removeItem("refresh_token");
-  localStorage.removeItem("email");
-  accessToken = "";
-  cart = [];
-  allProducts = [];
-  filteredProducts = [];
-  renderCart();
-  productGrid.innerHTML = "";
-  statusBar.textContent = "Logged out. See you! 👋";
-  userBadge.textContent = "👤 ...";
-  // Show login modal
-  document.getElementById("loginEmail").value    = "";
-  document.getElementById("loginPassword").value = "";
-  document.getElementById("loginError").style.display = "none";
-  document.getElementById("loginBtn").textContent = "🚀 Log In!";
-  document.getElementById("loginBtn").disabled    = false;
-  loginOverlay.classList.add("active");
+  if (window.authLogout) window.authLogout(); // This triggers the real logout from auth.js
+  window.location.href = "login.html"; // This kicks them back to the login screen
 }
 
 // ─── FETCH CATEGORIES ─────────────────────────
