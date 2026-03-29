@@ -34,6 +34,12 @@
       >
         Log Out
       </button>
+      <button
+        id="shopBtn"
+        class="w-full h-[38px] bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 mt-4"
+      >
+        Go to Shop 🛒
+      </button>
     </div>
 
     <script type="module">
@@ -57,6 +63,10 @@
       document.getElementById("logoutBtn").addEventListener("click", function () {
         logout();
         window.location.href = "login.html";
+      });
+      // Add this right below your existing logoutBtn event listener
+      document.getElementById("shopBtn").addEventListener("click", function () {
+        window.location.href = "shop.html";
       });
     </script>
   </body>

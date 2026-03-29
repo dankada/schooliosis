@@ -8,24 +8,6 @@
 </head>
 <body>
 
-  <!-- ===== LOGIN MODAL (shown on load if not logged in) ===== -->
-  <div class="modal-overlay active" id="loginOverlay">
-    <div class="modal-box">
-      <span class="modal-icon">👤</span>
-      <div class="modal-title">Welcome to Slopclop!</div>
-      <div class="modal-msg" style="margin-bottom:14px;">
-        Please log in to shop 🛍️<br>
-        <small style="color:#aaa;">(Use: john@mail.com / changeme)</small>
-      </div>
-      <div class="login-form">
-        <input type="email"    id="loginEmail"    class="text-input" placeholder="📧 Email" />
-        <input type="password" id="loginPassword" class="text-input" placeholder="🔑 Password" />
-        <div class="login-error" id="loginError" style="display:none;"></div>
-        <button class="btn btn-checkout" id="loginBtn" onclick="doLogin()">🚀 Log In!</button>
-      </div>
-    </div>
-  </div>
-
   <!-- ===== CHECKOUT / STATUS MODAL ===== -->
   <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
     <div class="modal-box" onclick="event.stopPropagation()">
@@ -106,6 +88,20 @@
 
   </div>
 
+  <script type="module">
+    import { getCurrentUser, logout } from "./auth.js";
+    
+    const currentUser = getCurrentUser();
+    
+    // Guard: Kick them back to login if they aren't authenticated
+    if (!currentUser) {
+      window.location.href = "login.html";
+    } else {
+      // Pass the email to app.js globally
+      window.loggedInEmail = currentUser.email;
+      window.authLogout = logout;
+    }
+  </script>
   <script src="app.js"></script>
 </body>
 </html>

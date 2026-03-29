@@ -30,82 +30,18 @@ const categorySelect= document.getElementById("categorySelect");
 
 // ─── INIT ─────────────────────────────────────
 window.addEventListener("DOMContentLoaded", () => {
-  // Check if already logged in
-  const savedToken = localStorage.getItem("access_token");
-  const savedEmail = localStorage.getItem("email");
-  if (savedToken && savedEmail) {
-    accessToken = savedToken;
-    onLoginSuccess(savedEmail);
-  }
-  // Enter key on login inputs
-  document.getElementById("loginPassword").addEventListener("keydown", e => {
-    if (e.key === "Enter") doLogin();
-  });
+  // Read the email passed from our auth.js module
+  setTimeout(() => {
+    if (window.loggedInEmail) {
+      userBadge.textContent = "👤 " + window.loggedInEmail;
+      fetchCategories(); 
+    }
+  }, 50); 
+
   handleResponsiveCart();
   window.addEventListener("resize", handleResponsiveCart);
 });
 
-// ─── AUTH: LOGIN ──────────────────────────────
-async function doLogin() {
-  const email    = document.getElementById("loginEmail").value.trim();
-  const password = document.getElementById("loginPassword").value;
-  const errEl    = document.getElementById("loginError");
-  const loginBtn = document.getElementById("loginBtn");
-
-  errEl.style.display = "none";
-
-  if (!email || !password) {
-    showLoginError("Please fill in both fields! 😅");
-    return;
-  }
-
-  loginBtn.textContent = "Logging in... ⏳";
-  loginBtn.disabled = true;
-
-  try {
-    const res = await fetch(`${API_BASE}/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password })
-    });
-
-    const data = await res.json();
-    console.log("[AUTH] login response:", data);
-
-    if (!res.ok) {
-      throw new Error(data.message || "Invalid credentials");
-    }
-
-    // Store tokens + email
-    accessToken = data.access_token;
-    localStorage.setItem("access_token",  data.access_token);
-    localStorage.setItem("refresh_token", data.refresh_token);
-    localStorage.setItem("email",         email);
-    console.log("[AUTH] login success — email:", email, "| token (first 20):", data.access_token.slice(0, 20) + "...");
-
-    onLoginSuccess(email);
-
-  } catch (err) {
-    showLoginError("❌ " + (err.message || "Login failed. Try again!"));
-    loginBtn.textContent = "🚀 Log In!";
-    loginBtn.disabled = false;
-  }
-}
-
-function showLoginError(msg) {
-  const errEl = document.getElementById("loginError");
-  errEl.textContent = msg;
-  errEl.style.display = "block";
-}
-
-async function onLoginSuccess(email) {
-  // Update badge
-  userBadge.textContent = "👤 " + email;
-  // Hide login overlay
-  loginOverlay.classList.remove("active");
-  // Load categories then products
-  await fetchCategories();
-}
 
 // ─── AUTH: LOGOUT ─────────────────────────────
 function logout() {
@@ -387,20 +323,8 @@ async function checkout() {
     return;
   }
 
-  // Try to get fresh profile from API; fall back to localStorage email
-  let userInfo = { email: localStorage.getItem("email") || "guest@example.com" };
-
-  try {
-    if (accessToken) {
-      const res = await fetch(`${API_BASE}/auth/profile`, {
-        headers: { Authorization: `Bearer ${accessToken}` }
-      });
-      if (res.ok) {
-        const profile = await res.json();
-        userInfo = { email: profile.email, name: profile.name, id: profile.id };
-      }
-    }
-  } catch (_) { /* use fallback */ }
+  // Pulls the email directly from your auth.js state
+  let userInfo = { email: window.loggedInEmail || "guest@example.com" };
 
   const total = cart.reduce((s, c) => s + c.price * c.quantity, 0);
   const payload = {
@@ -409,6 +333,7 @@ async function checkout() {
     total: parseFloat(total.toFixed(2)),
     date:  new Date()
   };
+
 
   console.log("[CHECKOUT] building payload...");
   console.log("[CHECKOUT] user:", userInfo);
