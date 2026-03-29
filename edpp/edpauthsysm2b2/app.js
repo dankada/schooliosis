@@ -145,9 +145,8 @@ async function fetchProducts(priceMin = null, priceMax = null) {
     allProducts      = data;
     filteredProducts = data;
 
-    const catLabel = categorySelect.options[categorySelect.selectedIndex]?.text || "All";
     renderProducts(filteredProducts);
-    statusBar.textContent = `✅ ${filteredProducts.length} product(s) — ${catLabel}`;
+    statusBar.textContent = `✅ ${filteredProducts.length} product(s) loaded!`;
   } catch (err) {
     console.error("Fetch error:", err);
     statusBar.textContent = "❌ Could not load products. Check your connection.";
