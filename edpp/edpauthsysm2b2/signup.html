@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <title>Sign Up</title>
+  </head>
+  <body class="m-auto flex items-center justify-center min-h-screen bg-gray-200">
+    <form
+      id="signupForm"
+      class="w-[350px] bg-white shadow-lg border border-slate-400 flex flex-col items-center justify-center gap-3 py-8 px-6 rounded-md"
+    >
+      <p class="text-2xl mb-3 text-slate-600 font-bold">Create Account</p>
+
+      <!-- username -->
+      <div class="flex flex-col gap-1 w-full">
+        <label class="text-sm text-slate-700">Username</label>
+        <input
+          type="text"
+          name="username"
+          id="username"
+          class="w-full h-[38px] bg-white border border-slate-400 rounded-lg px-3 text-sm"
+          placeholder="e.g. johndoe"
+        />
+        <span id="usernameError" class="text-red-500 text-xs italic"></span>
+      </div>
+
+      <!-- email -->
+      <div class="flex flex-col gap-1 w-full">
+        <label class="text-sm text-slate-700">Email Address</label>
+        <input
+          type="email"
+          name="email"
+          id="email"
+          class="w-full h-[38px] bg-white border border-slate-400 rounded-lg px-3 text-sm"
+          placeholder="e.g. john@email.com"
+        />
+        <span id="emailError" class="text-red-500 text-xs italic"></span>
+      </div>
+
+      <!-- password -->
+      <div class="flex flex-col gap-1 w-full">
+        <label class="text-sm text-slate-700">Password</label>
+        <input
+          type="password"
+          name="password"
+          id="password"
+          class="w-full h-[38px] bg-white border border-slate-400 rounded-lg px-3 text-sm"
+          placeholder="At least 8 characters"
+        />
+        <span id="passwordError" class="text-red-500 text-xs italic"></span>
+      </div>
+
+      <!-- general error/success message -->
+      <span id="formMessage" class="text-sm italic mt-1"></span>
+
+      <button
+        type="submit"
+        class="w-full h-[38px] bg-slate-700 text-white rounded-lg mt-3 text-sm hover:bg-slate-800"
+      >
+        Sign Up
+      </button>
+
+      <p class="text-sm text-slate-500 mt-1">
+        Already have an account?
+        <a href="login.html" class="text-blue-500 hover:underline">Log in</a>
+      </p>
+    </form>
+
+    <script type="module">
+      import { signup, getCurrentUser } from "./auth.js";
+
+      // redirect if already logged in
+      if (getCurrentUser()) {
+        window.location.href = "home.html";
+      }
+
+      // main state
+      let state = {
+        username: "",
+        email: "",
+        password: "",
+      };
+
+      // state mutation
+      function setState(newState) {
+        state = { ...state, ...newState };
+        render();
+      }
+
+      // event listeners on each input
+      document
+        .querySelectorAll("#signupForm input")
+        .forEach((input) => input.addEventListener("input", handleInput));
+
+      function handleInput(event) {
+        const { name, value } = event.target;
+        setState({ [name]: value });
+      }
+
+      // render: update error messages based on current state
+      function render() {
+        const usernameError = document.getElementById("usernameError");
+        const emailError = document.getElementById("emailError");
+        const passwordError = document.getElementById("passwordError");
+
+        usernameError.textContent =
+          state.username === "" ? "Username is required!" : "";
+
+        if (state.email === "") {
+          emailError.textContent = "Email is required!";
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(state.email)) {
+          emailError.textContent = "Invalid email format!";
+        } else {
+          emailError.textContent = "";
+        }
+
+        if (state.password === "") {
+          passwordError.textContent = "Password is required!";
+        } else if (state.password.length < 8) {
+          passwordError.textContent = "Password must be at least 8 characters";
+        } else if (!/\d/.test(state.password)) {
+          passwordError.textContent = "Password must contain a number";
+        } else {
+          passwordError.textContent = "";
+        }
+      }
+
+      // form submission
+      document.getElementById("signupForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        // run render to show any remaining errors before submitting
+        render();
+
+        const usernameError = document.getElementById("usernameError");
+        const emailError = document.getElementById("emailError");
+        const passwordError = document.getElementById("passwordError");
+        const formMessage = document.getElementById("formMessage");
+
+        // stop submission if there are any errors
+        if (
+          usernameError.textContent ||
+          emailError.textContent ||
+          passwordError.textContent
+        ) {
+          return;
+        }
+
+        const result = signup(state);
+
+        if (!result.success) {
+          formMessage.textContent = result.message;
+          formMessage.className = "text-red-500 text-sm italic mt-1";
+          return;
+        }
+
+        formMessage.textContent = result.message + " Redirecting to login...";
+        formMessage.className = "text-green-600 text-sm italic mt-1";
+
+        setTimeout(() => {
+          window.location.href = "login.html";
+        }, 1500);
+      });
+    </script>
+  </body>
+</html>

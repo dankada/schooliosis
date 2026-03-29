@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🛒 Slopclop Shop!</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ===== LOGIN MODAL (shown on load if not logged in) ===== -->
+  <div class="modal-overlay active" id="loginOverlay">
+    <div class="modal-box">
+      <span class="modal-icon">👤</span>
+      <div class="modal-title">Welcome to Slopclop!</div>
+      <div class="modal-msg" style="margin-bottom:14px;">
+        Please log in to shop 🛍️<br>
+        <small style="color:#aaa;">(Use: john@mail.com / changeme)</small>
+      </div>
+      <div class="login-form">
+        <input type="email"    id="loginEmail"    class="text-input" placeholder="📧 Email" />
+        <input type="password" id="loginPassword" class="text-input" placeholder="🔑 Password" />
+        <div class="login-error" id="loginError" style="display:none;"></div>
+        <button class="btn btn-checkout" id="loginBtn" onclick="doLogin()">🚀 Log In!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CHECKOUT / STATUS MODAL ===== -->
+  <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div id="modalContent"></div>
+      <button class="btn btn-close-modal" id="modalCloseBtn" onclick="closeModal()" style="display:none;">OK! 👍</button>
+    </div>
+  </div>
+
+  <!-- ===== HEADER ===== -->
+  <header>
+    <div class="header-inner">
+      <div class="logo">🛍️ Slopclop Shop!</div>
+      <div class="header-right">
+        <span class="user-badge" id="userBadge">👤 ...</span>
+        <button class="btn btn-logout" onclick="logout()">🚪 Logout</button>
+        <button class="cart-toggle-btn" id="cartToggleBtn" onclick="toggleCart()">
+          🛒 Cart <span class="cart-count" id="cartCount">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== MAIN LAYOUT ===== -->
+  <div class="layout">
+
+    <!-- LEFT: Products -->
+    <main class="product-section">
+
+      <!-- FILTER BAR -->
+      <div class="filter-bar">
+
+        <!-- Category selector -->
+        <div class="filter-group">
+          <span class="filter-label">📦 Category:</span>
+          <select id="categorySelect" class="select-input" onchange="onCategoryChange()">
+            <option value="">Loading...</option>
+          </select>
+        </div>
+
+        <!-- Price range -->
+        <div class="filter-group">
+          <span class="filter-label">💰 Price:</span>
+          <div class="filter-inputs">
+            <label>$<input type="number" id="priceMin" placeholder="Min" min="0" /></label>
+            <span>—</span>
+            <label>$<input type="number" id="priceMax" placeholder="Max" min="0" /></label>
+            <button class="btn btn-filter" onclick="applyFilter()">🔍 Go!</button>
+            <button class="btn btn-reset"  onclick="resetFilter()">❌ Reset</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- STATUS -->
+      <div class="status-bar" id="statusBar">Waiting for login... 🔐</div>
+
+      <!-- PRODUCT GRID -->
+      <div class="product-grid" id="productGrid"></div>
+
+    </main>
+
+    <!-- RIGHT: Cart -->
+    <aside class="cart-panel" id="cartPanel">
+      <div class="cart-header">
+        <h2>🛒 Your Cart</h2>
+        <button class="close-cart" onclick="toggleCart()">✖</button>
+      </div>
+
+      <div class="cart-items" id="cartItems">
+        <p class="empty-cart-msg">Your cart is empty! 😢<br>Add something nice!</p>
+      </div>
+
+      <div class="cart-footer">
+        <div class="cart-total">Total: <strong id="cartTotal">$0.00</strong></div>
+        <button class="btn btn-checkout" onclick="checkout()">💳 Checkout!</button>
+      </div>
+    </aside>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
