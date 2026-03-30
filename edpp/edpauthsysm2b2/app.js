@@ -11,7 +11,7 @@ const FETCH_LIMIT = 25;
 let allProducts      = [];
 let filteredProducts = [];
 let cart             = [];
-let currentCategoryId = 1;   // "" = all categories
+let currentCategoryId = 2;   // "" = all categories
 let accessToken      = "";
 
 // ─── DOM REFS ─────────────────────────────────
