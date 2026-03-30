@@ -5,13 +5,13 @@
 
 // ─── CONFIG ──────────────────────────────────
 const API_BASE    = "https://api.escuelajs.co/api/v1";
-const FETCH_LIMIT = 25;
+const FETCH_LIMIT = 100;
 
 // ─── STATE ───────────────────────────────────
 let allProducts      = [];
 let filteredProducts = [];
 let cart             = [];
-let currentCategoryId = 2;   // "" = all categories
+let currentCategoryId = 0;   // "" = all categories
 let accessToken      = "";
 
 // ─── DOM REFS ─────────────────────────────────
@@ -164,8 +164,16 @@ function renderProducts(products) {
     return;
   }
 
-  products.forEach(product => {
-    const imgSrc  = getValidImage(product.images);
+products.forEach(product => {
+    // 1. Figure out the category ID (fallback to currentCategoryId if missing)
+    const catId = product.category?.id || currentCategoryId;
+    
+    // 2. Grab the specific pastel fallback image for this category
+    const fallbackSrc = getCategoryFallback(catId);
+    
+    // 3. Try to get the real image, but pass the fallback just in case
+    const imgSrc  = getValidImage(product.images, fallbackSrc);
+    
     const inCart  = cart.find(c => c.id === product.id);
     const btnLabel = inCart ? "✅ In Cart!" : "🛒 Add to Cart";
 
@@ -177,7 +185,7 @@ function renderProducts(products) {
         <img src="${imgSrc}"
              alt="${escapeHtml(product.title)}"
              referrerpolicy="no-referrer"
-             onerror="this.src='https://placehold.co/600x400/f0f0f0/999?text=No+Image'" />
+             onerror="this.src='${fallbackSrc}'" /> 
       </div>
       <div class="product-info">
         <div class="product-name">${escapeHtml(product.title)}</div>
@@ -200,7 +208,7 @@ function applyFilter() {
   console.log("[FILTER] applying price range — min:", priceMin, "| max:", priceMax);
 
   if (priceMin !== null && priceMax !== null && priceMin > priceMax) {
-    alert("😅 Min price can't be greater than Max price!");
+    alert("Min price can't be greater than Max price!");
     return;
   }
 
@@ -422,12 +430,12 @@ function handleResponsiveCart() {
  * We try each entry, attempt to JSON.parse it if it looks nested,
  * then pull the first valid http URL we find.
  */
-function getValidImage(images) {
-  const FALLBACK = "https://placehold.co/600x400/f0f0f0/999?text=No+Image";
 
+
+function getValidImage(images, fallbackSrc) {
   if (!images || images.length === 0) {
     console.warn("[IMG] images array empty, using fallback");
-    return FALLBACK;
+    return fallbackSrc; // Use the dynamic one instead of the hardcoded one!
   }
 
   for (const raw of images) {
@@ -468,8 +476,8 @@ function getValidImage(images) {
     console.warn("[IMG] could not extract URL from entry:", raw);
   }
 
-  console.warn("[IMG] no valid URL found in images array:", images, "— using fallback");
-  return FALLBACK;
+console.warn("[IMG] no valid URL found in images array:", images, "— using fallback");
+  return fallbackSrc; // Changed from FALLBACK
 }
 
 function escapeHtml(str) {
@@ -487,4 +495,20 @@ function resetAllAddButtons() {
   document.querySelectorAll("[id^='addBtn-']").forEach(btn => {
     btn.textContent = "🛒 Add to Cart";
   });
+}
+
+function getCategoryFallback(categoryId) {
+  // Matches Flatzi API IDs to Slopclop pastel colors and emojis
+  const fallbacks = {
+    //1: "https://placehold.co/600x400/F48FB1/ffffff?text=Clothes",      // Pink
+    1: "https://i.imgur.com/Eha9E9B.png",
+    2: "https://placehold.co/600x400/81D4FA/333333?text=electronics placeholder",  // Blue
+    3: "https://placehold.co/600x400/A5D6A7/333333?text=image of chair",    // Green
+    // 4: "https://placehold.co/600x400/FFF176/333333?text=Shoes",
+    4: "https://i.imgur.com/OtXMD4r.png",        // Yellow
+    5: "https://placehold.co/600x400/CE93D8/ffffff?text=Misc"          // Purple
+  };
+
+  // Return the matching image, or a generic gray one if the category ID is unknown
+  return fallbacks[categoryId] || "https://placehold.co/600x400/f0f0f0/999?text=🛍️+No+Image";
 }
