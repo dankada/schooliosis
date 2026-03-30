@@ -11,7 +11,7 @@ const FETCH_LIMIT = 100;
 let allProducts      = [];
 let filteredProducts = [];
 let cart             = [];
-let currentCategoryId = 0;   // "" = all categories
+let currentCategoryId = 21;   // "" = all categories
 let accessToken      = "";
 
 // ─── DOM REFS ─────────────────────────────────
@@ -37,6 +37,17 @@ window.addEventListener("DOMContentLoaded", () => {
       fetchProducts(); 
     }
   }, 50); 
+
+  // ─── DEBUG: LOG AVAILABLE CATEGORIES ──────────
+  fetch(`${API_BASE}/categories`)
+    .then(res => res.json())
+    .then(data => {
+      console.log("🔍 DEBUG: Top 15 Available Categories");
+      // We use .slice(0, 15) because the public API has hundreds of user-made junk categories.
+      // The first 10-15 are usually the official, stable ones!
+      console.table(data.slice(0, 15).map(c => ({ ID: c.id, Name: c.name })));
+    })
+    .catch(err => console.error("Category fetch failed:", err));
 
   handleResponsiveCart();
   window.addEventListener("resize", handleResponsiveCart);
