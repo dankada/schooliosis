@@ -1,6 +1,5 @@
 /* =============================================
    SLOPCLOP SHOP - app.js
-   Vanilla JS | Flatzi API | JWT Auth
 ============================================= */
 
 // ─── CONFIG ──────────────────────────────────
@@ -11,7 +10,7 @@ const FETCH_LIMIT = 100;
 let allProducts      = [];
 let filteredProducts = [];
 let cart             = [];
-let currentCategoryId = 21;   // "" = all categories
+let currentCategoryId = "";   // "" = all categories
 let accessToken      = "";
 
 // ─── DOM REFS ─────────────────────────────────
@@ -43,8 +42,6 @@ window.addEventListener("DOMContentLoaded", () => {
     .then(res => res.json())
     .then(data => {
       console.log("🔍 DEBUG: Top 15 Available Categories");
-      // We use .slice(0, 15) because the public API has hundreds of user-made junk categories.
-      // The first 10-15 are usually the official, stable ones!
       console.table(data.slice(0, 15).map(c => ({ ID: c.id, Name: c.name })));
     })
     .catch(err => console.error("Category fetch failed:", err));
@@ -127,6 +124,7 @@ function logout() {
 // }
 
 // ─── FETCH PRODUCTS ───────────────────────────
+
 async function fetchProducts(priceMin = null, priceMax = null) {
   statusBar.textContent = "Loading products... ⏳";
   productGrid.innerHTML = "";
@@ -326,7 +324,7 @@ async function checkout() {
     return;
   }
 
-  // Pulls the email directly from your auth.js state
+  // Pulls the email directly from  auth.js state
   let userInfo = { email: window.loggedInEmail || "guest@example.com" };
 
   const total = cart.reduce((s, c) => s + c.price * c.quantity, 0);
@@ -351,7 +349,7 @@ async function checkout() {
   console.log("[CHECKOUT] total: $" + payload.total);
   console.log("[CHECKOUT] date:", payload.date.toISOString());
 
-  // Loading state
+
   openModal(`
     <span class="modal-icon">⏳</span>
     <div class="modal-title">Processing...</div>
@@ -359,7 +357,7 @@ async function checkout() {
   `);
   modalCloseBtn.style.display = "none";
 
-  // Simulate async request
+
   setTimeout(() => {
     const success = Math.random() > 0.1;
     console.log("[CHECKOUT] simulated request result:", success ? "SUCCESS ✅" : "FAILURE ❌");
@@ -438,8 +436,6 @@ function handleResponsiveCart() {
  *   3. Bracket-wrapped:      ["[https://...]"]
  *   4. Totally broken:       ["not a url at all"]
  *
- * We try each entry, attempt to JSON.parse it if it looks nested,
- * then pull the first valid http URL we find.
  */
 
 
@@ -512,12 +508,12 @@ function getCategoryFallback(categoryId) {
   // Matches Flatzi API IDs to Slopclop pastel colors and emojis
   const fallbacks = {
     //1: "https://placehold.co/600x400/F48FB1/ffffff?text=Clothes",      // Pink
-    1: "https://i.imgur.com/Eha9E9B.png",
-    2: "https://placehold.co/600x400/81D4FA/333333?text=electronics placeholder",  // Blue
-    3: "https://placehold.co/600x400/A5D6A7/333333?text=image of chair",    // Green
+    37: "https://i.imgur.com/Eha9E9B.png",
+    36: "https://placehold.co/600x400/81D4FA/333333?text=electronics placeholder",  // Blue
+    33: "https://placehold.co/600x400/A5D6A7/333333?text=image of chair",    // Green
     // 4: "https://placehold.co/600x400/FFF176/333333?text=Shoes",
-    4: "https://i.imgur.com/OtXMD4r.png",        // Yellow
-    5: "https://placehold.co/600x400/CE93D8/ffffff?text=Misc"          // Purple
+    35: "https://i.imgur.com/OtXMD4r.png",        // Yellow
+    34: "https://placehold.co/600x400/CE93D8/ffffff?text=Misc"          // Purple
   };
 
   // Return the matching image, or a generic gray one if the category ID is unknown
