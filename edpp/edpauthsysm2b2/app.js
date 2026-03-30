@@ -4,7 +4,7 @@
 
 // ─── CONFIG ──────────────────────────────────
 const API_BASE    = "https://api.escuelajs.co/api/v1";
-const FETCH_LIMIT = 100;
+const FETCH_LIMIT = 25;
 
 // ─── STATE ───────────────────────────────────
 let allProducts      = [];
@@ -320,7 +320,7 @@ function renderCart() {
 // ─── CHECKOUT ─────────────────────────────────
 async function checkout() {
   if (cart.length === 0) {
-    alert("😅 Your cart is empty! Add some items first.");
+    alert("Your cart is empty! Add some items first.");
     return;
   }
 
