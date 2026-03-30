@@ -174,10 +174,10 @@ function renderProducts(products) {
   }
 
 products.forEach(product => {
-    // 1. Figure out the category ID (fallback to currentCategoryId if missing)
+    // 1. Figure out the category ID (i think itll fallback to currentCategoryId if missing)
     const catId = product.category?.id || currentCategoryId;
     
-    // 2. Grab the specific pastel fallback image for this category
+    // 2. Grab the specific pastel fallback image for this category AGOSAGKLSDGJSDGLKJ
     const fallbackSrc = getCategoryFallback(catId);
     
     // 3. Try to get the real image, but pass the fallback just in case
